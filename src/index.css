@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&family=Caesar+Dressing&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vast+Shadow&display=swap');
+@import 'tailwindcss';
+
+body {
+    @apply bg-black text-white;
+}
+
+.bitcount {
+    font-family: "caesar Dressing",
+        system-ui;
+}
+
+.vast-shadow{
+    font-family: "Vast Shadow", serif;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
