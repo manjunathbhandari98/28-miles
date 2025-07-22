@@ -1,6 +1,10 @@
-const Hero = ({ banner }) => {
+const Hero = ({ banner, view }) => {
   return (
-    <div className="w-full">
+    <div
+      className={`w-full ${
+        view === "desktop" ? "md:flex hidden" : "md:hidden"
+      }`}
+    >
       <img
         src={banner}
         alt="hero-banner"

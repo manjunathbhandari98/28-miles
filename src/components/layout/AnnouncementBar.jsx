@@ -23,7 +23,7 @@ const AnnouncementBar = () => {
   if (hidden) return null;
 
   return (
-    <div className="relative bg-[rgb(182,255,232)] text-black text-sm font-semibold p-1.5 flex items-center justify-between">
+    <div className="relative z-60 bg-[rgb(182,255,232)] text-black text-sm font-semibold p-1.5 flex items-center justify-between">
       <div className="text-center w-full animate-fade-in">
         {announcements[currentIndex].message}
       </div>
