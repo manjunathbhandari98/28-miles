@@ -1,8 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const AnnouncementBar = () => {
-  const [hidden, setHidden] = useState(false);
+const AnnouncementBar = ({ hidden, setHidden }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const announcements = [
@@ -23,7 +22,7 @@ const AnnouncementBar = () => {
   if (hidden) return null;
 
   return (
-    <div className="relative z-60 bg-[rgb(182,255,232)] text-black text-sm font-semibold p-1.5 flex items-center justify-between">
+    <div className="relative hidden z-60 bg-[rgb(182,255,232)] text-black text-sm font-semibold p-1.5 sm:flex items-center justify-between">
       <div className="text-center w-full animate-fade-in">
         {announcements[currentIndex].message}
       </div>

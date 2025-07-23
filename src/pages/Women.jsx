@@ -1,5 +1,14 @@
+import CollectionGrid from "../components/common/CollectionGrid";
+import { products } from "../data/products";
+
 const Women = () => {
-  return <div>Women</div>;
+  const womenItems = products.filter((product) => product.category === "Women");
+
+  return (
+    <div className="w-full h-full m-auto pt-16">
+      <CollectionGrid products={womenItems} />
+    </div>
+  );
 };
 
 export default Women;

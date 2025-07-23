@@ -1,4 +1,5 @@
 import { Facebook, Instagram, Mail, Twitter } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const Footer = () => {
   const services = [
@@ -14,8 +15,16 @@ const Footer = () => {
     { id: 4, name: "About Us", link: "#" },
   ];
 
+  const location = useLocation();
+  const isSearchRoute = location.pathname.includes("search");
+  const isCartRoute = location.pathname.includes("cart");
+
+  if (isSearchRoute) return null;
+
+  if (isCartRoute) return null;
+
   return (
-    <footer className=" px-6 md:px-20 py-16">
+    <footer className="mt-20 px-6 md:px-20 py-16">
       <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-12">
         {/* Logo & Tagline */}
         <div>

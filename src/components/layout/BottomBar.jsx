@@ -1,11 +1,18 @@
 import { Heart, Home, Search, ShoppingBag, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const BottomBar = () => {
+  const navigate = useNavigate();
   const profileItems = [
-    { id: 1, label: "Home", icon: <Home size={22} />, link: "" },
+    { id: 1, label: "Home", icon: <Home size={22} />, link: "/" },
     { id: 2, label: "Wishlist", icon: <Heart size={22} />, link: "" },
-    { id: 3, label: "Search", icon: <Search size={22} />, link: "" },
-    { id: 4, label: "Cart", icon: <ShoppingBag size={22} />, link: "" },
+    { id: 3, label: "Search", icon: <Search size={22} />, link: "/search" },
+    {
+      id: 4,
+      label: "Cart",
+      icon: <ShoppingBag size={22} />,
+      link: "/checkout/cart",
+    },
     { id: 5, label: "Account", icon: <User size={22} />, link: "" },
   ];
 
@@ -15,7 +22,9 @@ const BottomBar = () => {
         {profileItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => {}}
+            onClick={() => {
+              navigate(item.link);
+            }}
             className="flex flex-col items-center justify-center text-zinc-300 hover:text-white transition-colors duration-200 text-xs"
           >
             {item.icon}

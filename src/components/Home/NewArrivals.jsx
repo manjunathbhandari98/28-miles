@@ -1,62 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
-
-const products = [
-  {
-    id: 1,
-    name: "Neon Graffiti Tee",
-    price: "₹1,299",
-    image: "/gallery-1.jpg",
-  },
-  {
-    id: 2,
-    name: "Urban Camouflage Hoodie",
-    price: "₹1,899",
-    image: "/gallery-2.jpg",
-  },
-  {
-    id: 3,
-    name: "Midnight Denim Jacket",
-    price: "₹2,499",
-    image: "/gallery-3.jpg",
-  },
-  {
-    id: 4,
-    name: "Rogue Cargo Pants",
-    price: "₹1,599",
-    image: "/gallery-4.jpg",
-  },
-  {
-    id: 5,
-    name: "Psychedelic Oversized Shirt",
-    price: "₹1,699",
-    image: "/gallery-5.jpg",
-  },
-  {
-    id: 5,
-    name: "Psychedelic Oversized Shirt",
-    price: "₹1,699",
-    image: "/gallery-2.jpg",
-  },
-  {
-    id: 5,
-    name: "Psychedelic Oversized Shirt",
-    price: "₹1,699",
-    image: "/gallery-6.jpg",
-  },
-  {
-    id: 5,
-    name: "Psychedelic Oversized Shirt",
-    price: "₹1,699",
-    image: "/gallery-7.jpg",
-  },
-  {
-    id: 5,
-    name: "Psychedelic Oversized Shirt",
-    price: "₹1,699",
-    image: "/gallery-8.jpg",
-  },
-];
+import { products } from "../../data/products";
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);

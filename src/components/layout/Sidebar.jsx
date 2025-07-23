@@ -1,56 +1,65 @@
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef(null);
+  const navigate = useNavigate();
 
   const navItems = [
     { id: 1, item: "New Arrivals", link: "/new-arrivals" },
-    { id: 2, item: "Men", link: "/men" },
-    { id: 3, item: "Women", link: "/women" },
-    { id: 4, item: "Shop All", link: "/all" },
+    { id: 2, item: "Men", link: "/collection-men" },
+    { id: 3, item: "Women", link: "/collection-women" },
+    { id: 4, item: "Shop All", link: "/collection-all" },
     { id: 5, item: "About Us", link: "/about-us" },
   ];
 
-  // Freeze background scroll when sidebar is open
   useEffect(() => {
-    if (open) {
-      document.body.classList.add("no-scroll");
-    } else {
-      document.body.classList.remove("no-scroll");
-    }
-
-    return () => {
-      document.body.classList.remove("no-scroll");
-    };
+    document.body.classList.toggle("overflow-hidden", open);
+    return () => document.body.classList.remove("overflow-hidden");
   }, [open]);
 
-  // Close sidebar when clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         setOpen(false);
       }
     };
-
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
+
+  const handleNavigate = (link) => {
+    navigate(link);
+    setOpen(false);
+  };
+
+  const location = useLocation();
+  const isSearchRoute = location.pathname.includes("search");
+  const isCartRoute = location.pathname.includes("cart");
+
+  if (isSearchRoute) return null;
+
+  if (isCartRoute) return null;
 
   return (
     <>
-      {/* Hamburger Icon */}
-      <div className="md:hidden p-4 fixed top-0 left-0 z-50">
-        <Menu onClick={() => setOpen(true)} className={`${open && "hidden"}`} />
+      {/* Mobile Navbar */}
+      <div className="md:hidden flex bg-zinc-950 justify-between items-center w-full px-4 py-3 fixed top-0 left-0 shadow-md z-50">
+        <Menu
+          onClick={() => setOpen(true)}
+          className={`${open && "hidden"}  cursor-pointer`}
+        />
+        <img
+          src="/28Miles2.png"
+          alt="logo"
+          className={`w-14 ${open && "hidden"}`}
+        />
+        <div />
       </div>
 
-      {/* Backdrop and Sidebar */}
+      {/* Sidebar & Backdrop */}
       <div
         className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${
           open
@@ -64,36 +73,44 @@ const Sidebar = () => {
         {/* Sidebar */}
         <div
           ref={sidebarRef}
-          className={`absolute top-0 left-0 h-full w-[80%] max-w-xs bg-black text-white p-6 transition-transform duration-300 transform ${
+          className={`absolute top-0 left-0 h-full w-[80%] max-w-xs bg-gradient-to-b from-zinc-950 to-zinc-900 text-white p-6 shadow-2xl transform transition-transform duration-300 ${
             open ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           {/* Header */}
-          <div className="flex justify-between">
-            <div className="flex gap-2">
-              <img src="/user.png" alt="user" className="w-10 h-10" />
-              <div className="flex flex-col">
-                Hey There
-                <div className="flex">
-                  <p className="text-sm text-blue-400">Login</p>
-                  <p className="text-sm text-blue-400 mx-1">/</p>
-                  <p className="text-sm text-blue-400">Signup</p>
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex gap-3 items-center">
+              <img
+                src="/user.png"
+                alt="user"
+                className="w-10 h-10 rounded-full border border-white"
+              />
+              <div>
+                <p className="text-sm text-gray-200">Hey There</p>
+                <div className="flex gap-1 text-xs text-blue-400">
+                  <p className="cursor-pointer hover:underline">Login</p>
+                  <span>/</span>
+                  <p className="cursor-pointer hover:underline">Signup</p>
                 </div>
               </div>
             </div>
-            <X
-              size={18}
-              onClick={() => setOpen(false)}
-              className="cursor-pointer"
-            />
+            <div onClick={() => setOpen(false)} className="p-5">
+              <X size={20} />
+            </div>
           </div>
 
-          {/* Navigation Items */}
-          <div className="flex flex-col gap-5 mt-8">
-            <h3 className="text-gray-300/60 uppercase text-sm">Shop In</h3>
-            {navItems.map((item) => (
-              <div key={item.id} className="cursor-pointer">
-                {item.item}
+          {/* Navigation */}
+          <div className="flex flex-col gap-5">
+            <h3 className="text-gray-400 uppercase text-xs tracking-wide">
+              Shop In
+            </h3>
+            {navItems.map((nav) => (
+              <div
+                key={nav.id}
+                onClick={() => handleNavigate(nav.link)}
+                className="text-base font-medium py-1 px-2 rounded-md hover:bg-white/10 cursor-pointer transition"
+              >
+                {nav.item}
               </div>
             ))}
           </div>
