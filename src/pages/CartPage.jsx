@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import CartItem from "../components/common/CartItem";
 
 const CartPage = () => {
-  const cartItems = []; // Dummy items
+  const cartItems = [1]; // Dummy items
 
   if (cartItems.length === 0) {
     return (

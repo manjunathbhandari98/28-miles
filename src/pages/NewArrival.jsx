@@ -6,7 +6,7 @@ const NewArrival = () => {
 
   return (
     <div className="w-full h-full m-auto pt-16">
-      <CollectionGrid products={NewArrivals} />
+      <CollectionGrid products={NewArrivals} name={"New Arrivals"} />
     </div>
   );
 };

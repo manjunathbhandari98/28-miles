@@ -38,10 +38,18 @@ const Sidebar = () => {
   const location = useLocation();
   const isSearchRoute = location.pathname.includes("search");
   const isCartRoute = location.pathname.includes("cart");
+  const isLoginPage = location.pathname.includes("auth");
+  const isManagePage = location.pathname.includes("manage");
+  const isHelpSupportPage = location.pathname.includes("help-and-support");
 
   if (isSearchRoute) return null;
 
   if (isCartRoute) return null;
+
+  if (isLoginPage) return null;
+
+  if (isManagePage) return null;
+  if (isHelpSupportPage) return null;
 
   return (
     <>

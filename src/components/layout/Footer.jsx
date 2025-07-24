@@ -1,7 +1,9 @@
 import { Facebook, Instagram, Mail, Twitter } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   const services = [
     { id: 1, name: "Contact Us", link: "#" },
     { id: 2, name: "Track Order", link: "#" },
@@ -9,19 +11,30 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    { id: 1, name: "Privacy Policy", link: "#" },
-    { id: 2, name: "Shipping & Returns", link: "#" },
-    { id: 3, name: "Terms & Conditions", link: "#" },
-    { id: 4, name: "About Us", link: "#" },
+    { id: 1, name: "Privacy Policy", link: "/privacy-policy" },
+    { id: 2, name: "Shipping & Returns", link: "/shipping-returns" },
+    { id: 3, name: "Terms & Conditions", link: "/terms-and-conditions" },
+    { id: 4, name: "About Us", link: "/about-us" },
   ];
 
   const location = useLocation();
   const isSearchRoute = location.pathname.includes("search");
   const isCartRoute = location.pathname.includes("cart");
+  const isLoginPage = location.pathname.includes("auth");
+  const isProfilePage = location.pathname.includes("my-profile");
+  const isManagePage = location.pathname.includes("manage");
+  const isHelpSupportPage = location.pathname.includes("help-and-support");
 
   if (isSearchRoute) return null;
 
   if (isCartRoute) return null;
+
+  if (isLoginPage) return null;
+
+  if (isProfilePage) return null;
+
+  if (isManagePage) return null;
+  if (isHelpSupportPage) return null;
 
   return (
     <footer className="mt-20 px-6 md:px-20 py-16">
@@ -55,9 +68,15 @@ const Footer = () => {
           <ul className="space-y-2 text-md text-gray-300">
             {quickLinks.map((item) => (
               <li key={item.id}>
-                <a href={item.link} className="hover:text-amber-400 transition">
+                <div
+                  onClick={() => {
+                    navigate(item.link);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="hover:text-amber-400 cursor-pointer transition"
+                >
                   {item.name}
-                </a>
+                </div>
               </li>
             ))}
           </ul>

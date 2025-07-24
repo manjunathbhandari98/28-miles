@@ -6,7 +6,7 @@ const Men = () => {
 
   return (
     <div className="w-full h-full m-auto pt-16">
-      <CollectionGrid products={menItems} />
+      <CollectionGrid products={menItems} name={"Men"} />
     </div>
   );
 };
