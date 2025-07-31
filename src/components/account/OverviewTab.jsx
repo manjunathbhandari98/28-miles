@@ -1,16 +1,28 @@
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+// import { updateUser } from "../../services/userService";
 import InputBox from "../ui/InputBox";
 
-const OverviewTab = ({
-  name,
-  setName,
-  phone,
-  setPhone,
-  email,
-  setEmail,
-  edit,
-  setEdit,
-}) => {
-  const handleSave = () => setEdit(false);
+const OverviewTab = ({ name, phone, email, edit, setEdit }) => {
+  const [formData, setFormData] = useState({ name, phone, email });
+  // const { setUser } = useAuth();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      // const updatedUser = await updateUser(formData);
+      toast.success("Profile updated");
+      // setUser(updatedUser); // update in context
+      setEdit(false);
+    } catch (err) {
+      toast.error("Update failed. Try again.");
+      throw new err();
+    }
+  };
 
   return (
     <div>
@@ -29,13 +41,15 @@ const OverviewTab = ({
           <>
             <h2 className="text-lg">
               <span className="font-medium text-gray-400">Full Name:</span>{" "}
-              {name}
+              {formData.name}
             </h2>
             <h2 className="text-lg">
-              <span className="font-medium text-gray-400">Phone:</span> {phone}
+              <span className="font-medium text-gray-400">Phone:</span>{" "}
+              {formData.phone}
             </h2>
             <h2 className="text-lg">
-              <span className="font-medium text-gray-400">Email:</span> {email}
+              <span className="font-medium text-gray-400">Email:</span>{" "}
+              {formData.email}
             </h2>
           </>
         ) : (
@@ -43,22 +57,22 @@ const OverviewTab = ({
             <InputBox
               label="Full Name"
               name="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={formData.name}
+              onChange={handleChange}
             />
             <InputBox
               label="Phone Number"
               name="phone"
               type="number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={formData.phone}
+              onChange={handleChange}
             />
             <InputBox
               label="Email"
               name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
             />
           </>
         )}

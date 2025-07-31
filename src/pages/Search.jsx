@@ -1,12 +1,25 @@
 import { ArrowLeft, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { products } from "../data/products";
+import { fetchProducts } from "../service/productService";
 
 const SearchPage = () => {
   const navigate = useNavigate();
   const inputRef = useRef();
   const [searchKey, setSearchKey] = useState("");
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(data.content);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadProducts();
+  }, []);
   const handleBack = () => {
     navigate(-1);
   };
@@ -15,8 +28,12 @@ const SearchPage = () => {
     inputRef.current?.focus();
   }, []);
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchKey.toLowerCase())
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchKey.toLowerCase()) ||
+      product.categoryName.toLowerCase().includes(searchKey.toLowerCase()) ||
+      product.slug.toLowerCase().includes(searchKey.toLowerCase()) ||
+      product.gender.toLowerCase().includes(searchKey.toLowerCase())
   );
 
   return (
@@ -48,10 +65,14 @@ const SearchPage = () => {
           {filteredProducts.slice(0, 6).map((product) => (
             <Link key={product.id} to={`/product-view/${product.slug}`}>
               <div className="flex gap-2">
-                <img src={product.image} alt={product.name} className="w-12" />
+                <img
+                  src={product.images?.[0]}
+                  alt={product.name}
+                  className="w-12"
+                />
                 <div className="flex flex-col p-2 gap-2">
                   <h2 className="text-sm cursor-pointer">{product.name}</h2>
-                  <p className="text-xs">In {product.category}</p>
+                  <p className="text-xs">In {product.categoryName}</p>
                 </div>
               </div>
             </Link>

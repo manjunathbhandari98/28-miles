@@ -1,9 +1,21 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { useCart } from "../hooks/useCart";
+import { verifyOTP } from "../service/authService";
 
 const OtpVerificationPage = () => {
-  const inputsRef = useRef([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const inputsRef = useRef(Array(4).fill(null)); // Ensures 4 refs always exist
   const [otp, setOtp] = useState(["", "", "", ""]);
+
+  const { login } = useAuth();
+  const { mergeCartAfterLogin } = useCart();
+
+  const searchParams = new URLSearchParams(location.search);
+  const email = searchParams.get("email");
 
   const handleChange = (index, value) => {
     if (!/^\d*$/.test(value)) return;
@@ -13,20 +25,39 @@ const OtpVerificationPage = () => {
     setOtp(updatedOtp);
 
     if (value && index < 3) {
-      inputsRef.current[index + 1].focus();
+      inputsRef.current[index + 1]?.focus();
     }
   };
 
   const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputsRef.current[index - 1].focus();
+      inputsRef.current[index - 1]?.focus();
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const otpValue = otp.join("");
-    console.log("Entered OTP:", otpValue);
-    // Send OTP to backend here
+    if (otpValue.length < 4) {
+      toast.error("Please enter all 4 digits");
+      return;
+    }
+
+    try {
+      const cartId = localStorage.getItem("guestCartId");
+      const res = await verifyOTP(email, otpValue);
+      if (res?.status === 200) {
+        login(res.data.token, res.data.user);
+        await mergeCartAfterLogin(cartId, res.data.user.userId);
+        localStorage.removeItem("guestCartId");
+
+        navigate("/", { replace: true });
+      } else {
+        toast.error("Invalid OTP. Double-check and enter again");
+      }
+    } catch (error) {
+      const message = error?.response?.data?.message || "Verification failed";
+      toast.error(message);
+    }
   };
 
   return (
@@ -50,7 +81,8 @@ const OtpVerificationPage = () => {
                 key={idx}
                 type="text"
                 inputMode="numeric"
-                maxLength="1"
+                maxLength={1}
+                autoFocus={idx === 0}
                 className="w-12 h-14 text-center text-white text-xl bg-transparent border border-gray-400 rounded-lg focus:outline-none focus:border-white transition-all"
                 value={digit}
                 onChange={(e) => handleChange(idx, e.target.value)}
@@ -59,15 +91,14 @@ const OtpVerificationPage = () => {
               />
             ))}
           </div>
-          <Link to={"/my-profile"}>
-            <button
-              onClick={handleSubmit}
-              className="w-full py-3 rounded-lg bg-white text-black font-semibold text-lg
+
+          <button
+            onClick={handleSubmit}
+            className="w-full py-3 rounded-lg bg-white text-black font-semibold text-lg
              hover:bg-gray-200 transition-all duration-200 cursor-pointer"
-            >
-              Verify OTP
-            </button>
-          </Link>
+          >
+            Verify OTP
+          </button>
         </div>
       </div>
     </div>

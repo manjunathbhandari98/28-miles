@@ -1,4 +1,4 @@
-const NavOptionCard = ({ items = [], images }) => {
+const NavOptionCard = ({ items = [], images, onClick }) => {
   return (
     <div className="pt-8 bg-transparent">
       <div className="bg-zinc-900 shadow-xl w-[900px] h-80 flex overflow-hidden border border-zinc-800">
@@ -8,6 +8,7 @@ const NavOptionCard = ({ items = [], images }) => {
           {items.map((item, index) => (
             <div
               key={index}
+              onClick={() => onClick(index)}
               className="hover:text-amber-300 transition-colors duration-200 cursor-pointer"
             >
               {item}

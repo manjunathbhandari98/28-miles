@@ -1,6 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef } from "react";
-import { products } from "../../data/products";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchNewProducts } from "../../service/productService";
+import { RUPEE_SYMBOL } from "../../utils/ruppeSymbol";
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
@@ -14,6 +16,18 @@ const NewArrivals = () => {
       });
     }
   };
+
+  const [newArrivals, setNewArrivals] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await fetchNewProducts();
+      setNewArrivals(res.content);
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <section className="relative py-12">
@@ -43,20 +57,24 @@ const NewArrivals = () => {
           ref={scrollRef}
           className="flex overflow-x-auto gap-6 px-4 md:px-6 scroll-smooth scrollbar-hide snap-x snap-mandatory"
         >
-          {products.map((product) => (
+          {newArrivals.slice(0, 12).map((product) => (
             <div
+              onClick={() => navigate(`product-view/${product.slug}`)}
               key={product.id}
-              className="min-w-[70%] sm:min-w-[45%] md:min-w-[250px] bg-zinc-900 rounded-xl p-3 shadow-lg snap-start transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+              className="min-w-[70%] sm:min-w-[45%] md:min-w-[250px] cursor-pointer bg-zinc-900 rounded-xl p-3 shadow-lg snap-start transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             >
               <img
-                src={product.image}
+                src={product.images[0]}
                 alt={product.name}
                 className="w-full h-48 object-cover rounded-lg mb-3"
               />
               <h3 className="text-white font-semibold text-lg">
                 {product.name}
               </h3>
-              <p className="text-pink-300 text-sm">{product.price}</p>
+              <p className="text-pink-300 text-sm flex">
+                {RUPEE_SYMBOL}
+                {product.price}
+              </p>
             </div>
           ))}
         </div>

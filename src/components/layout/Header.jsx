@@ -2,6 +2,7 @@ import { Heart, Search, ShoppingBag, User } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchPage from "../../pages/Search";
+import { useCart } from "./../../hooks/useCart";
 import AnnouncementBar from "./AnnouncementBar";
 import Navbar from "./Navbar";
 
@@ -12,6 +13,8 @@ const Header = () => {
   const isSearchRoute = location.pathname.includes("search");
   const isCartPage = location.pathname.includes("checkout/cart");
   const isLoginPage = location.pathname.includes("auth");
+
+  const { cartItems } = useCart();
 
   if (isCartPage) return null;
 
@@ -37,9 +40,18 @@ const Header = () => {
         </div>
         <div className="flex gap-5 cursor-pointer items-start p-3">
           <Search size={20} onClick={() => navigate("/search")} />
-          <ShoppingBag size={20} onClick={() => navigate("/checkout/cart")} />
+          <div
+            className="relative cursor-pointer group"
+            onClick={() => navigate("/checkout/cart")}
+          >
+            <div className="absolute -top-3 -right-2 bg-red-600 text-white text-[10px] font-semibold h-5 w-5 flex items-center justify-center rounded-full shadow-md group-hover:scale-110 transition">
+              {cartItems.length}
+            </div>
+            <ShoppingBag size={24} />
+          </div>
+
           <Heart size={20} onClick={() => navigate("/wishlist")} />
-          <User size={20} onClick={() => navigate("/auth/login")} />
+          <User size={20} onClick={() => navigate("/my-profile")} />
         </div>
       </div>
     </div>

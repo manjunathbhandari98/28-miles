@@ -1,10 +1,91 @@
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import CartItem from "../components/common/CartItem";
+import ErrorPage from "../components/ui/ErrorPage";
+import LoadingPage from "../components/ui/LoadingPage";
+import { useAuth } from "../hooks/useAuth";
+import { moveToWishlist, removeCartItem } from "../service/cartService";
+import CartItem from "./../components/common/CartItem";
+import { useCart } from "./../hooks/useCart";
 
 const CartPage = () => {
-  const cartItems = [1]; // Dummy items
+  const [error, setError] = useState(null);
 
-  if (cartItems.length === 0) {
+  const { isAuthenticated } = useAuth();
+  const {
+    cartItems: contextCartItems,
+    cart,
+    cartId,
+    loading,
+    handleUpdateQuantity,
+    handleRemoveFromCart,
+    refreshCart,
+  } = useCart();
+
+  // Use cart items from context instead of local state
+  const cartItems = contextCartItems;
+
+  useEffect(() => {
+    // Optional: Refresh cart when component mounts
+    // This ensures we have the latest cart data
+    if (!loading && (isAuthenticated || !isAuthenticated)) {
+      refreshCart();
+    }
+  }, []); // Only run once on mount
+
+  const onQuantityUpdate = async (item, quantity) => {
+    try {
+      await handleUpdateQuantity(
+        cartId, // Use cartId from context
+        item.productId,
+        item.size,
+        item.color,
+        quantity
+      );
+      toast.success(`Item Updated`, {
+        duration: 4000,
+        position: "bottom-center",
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    }
+  };
+
+  const handleRemoveItem = async (cartItemId) => {
+    try {
+      await handleRemoveFromCart(cartItemId);
+      toast.success("Item removed from cart");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to remove item");
+      setError("Failed to remove item");
+    }
+  };
+
+  const handleMoveToWishlist = async (item) => {
+    try {
+      await moveToWishlist(item.productId);
+      await removeCartItem(item.cartItemId);
+      toast.success("Moved to wishlist");
+      // Refresh cart to reflect changes
+      await refreshCart();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to move item");
+    }
+  };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  if (error) {
+    return <ErrorPage message={error} />;
+  }
+
+  // Empty Cart - check if cartItems is array and has items
+  if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
     return (
       <div className="h-screen w-full flex flex-col justify-center items-center px-4 text-center">
         <img src="/empty-cart.png" alt="empty-cart" className="w-40 md:w-56" />
@@ -12,7 +93,7 @@ const CartPage = () => {
           Hey, your bag feels so light!
         </h3>
         <h4 className="text-md text-gray-500">
-          Let’s add some items to your bag
+          Let's add some items to your bag
         </h4>
         <Link
           to="/"
@@ -23,6 +104,21 @@ const CartPage = () => {
       </div>
     );
   }
+
+  // Calculate totals from cartItems array
+  const subTotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const totalDiscount = cartItems.reduce(
+    (sum, item) => sum + (item.oldPrice - item.price) * item.quantity,
+    0
+  );
+  const totalTax = cartItems.reduce(
+    (sum, item) => sum + item.tax * item.quantity,
+    0
+  );
+  const grandTotal = subTotal + totalTax;
 
   return (
     <div className="w-full min-h-screen px-4 sm:px-10 py-6 font-sans">
@@ -44,12 +140,27 @@ const CartPage = () => {
         </div>
       </div>
 
+      <Link to={"/"}>
+        <div className="inline-block px-6 py-3 rounded-xl bg-amber-500 text-white font-semibold text-center shadow-md hover:bg-amber-600 hover:shadow-lg transition duration-300 ease-in-out my-5">
+          ← Back to Home
+        </div>
+      </Link>
+
       {/* Cart Layout */}
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 flex flex-col gap-4">
-          {cartItems.map((item, idx) => (
-            <CartItem key={idx} />
+          {cartItems.map((item, index) => (
+            <CartItem
+              key={`${item.cartItemId || item.productId}-${item.size}-${
+                item.color
+              }-${index}`}
+              item={item}
+              cartItems={cart}
+              onUpdateQuantity={onQuantityUpdate}
+              onRemove={handleRemoveItem}
+              onMoveToWishlist={handleMoveToWishlist}
+            />
           ))}
         </div>
 
@@ -59,11 +170,11 @@ const CartPage = () => {
             <h2 className="text-lg font-semibold">Price Summary</h2>
             <div className="flex justify-between text-sm">
               <span>Total MRP (Incl. of Taxes)</span>
-              <span>₹499</span>
+              <span>₹{subTotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Discount</span>
-              <span>-₹49</span>
+              <span>-₹{totalDiscount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Delivery Fee</span>
@@ -73,9 +184,14 @@ const CartPage = () => {
               </span>
             </div>
             <hr className="border-t border-gray-700" />
+            <div className="flex justify-between text-sm">
+              <span>Taxes</span>
+              <span>₹{totalTax.toFixed(2)}</span>
+            </div>
+            <hr className="border-t border-gray-700" />
             <div className="flex justify-between font-semibold text-md">
-              <span>Total Amount</span>
-              <span>₹399</span>
+              <span>Grand Total</span>
+              <span>₹{grandTotal.toFixed(2)}</span>
             </div>
             <p className="text-green-400 text-center text-sm mt-1">
               Yayy! You get FREE delivery on this order 🎉

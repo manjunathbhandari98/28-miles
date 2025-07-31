@@ -1,16 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCategoriesByGender } from "../../service/categoryService";
 import NavOptionCard from "../common/NavOptionCard";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null); // "Men", "Women", or null
 
-  // Dummy dropdown content
-  const dropdownContent = {
-    Men: ["T-Shirts", "Shirts", "Jeans", "Shoes"],
-    Women: ["Tops", "Dresses", "Heels", "Accessories"],
-  };
+  const [menCategory, setMenCategory] = useState([]);
+  const [womenCategory, setWomenCategory] = useState([]);
+
+  useEffect(() => {
+    const fetchMenCategory = async () => {
+      const res = await getCategoriesByGender("Men");
+      setMenCategory(res || []);
+    };
+    const fetchWomenCategory = async () => {
+      const res = await getCategoriesByGender("Women");
+      setWomenCategory(res || []);
+    };
+    fetchMenCategory();
+    fetchWomenCategory();
+  }, []);
+
   const dropdownImages = {
     Men: ["/gallery-1.jpg", "/gallery-2.jpg"],
     Women: ["/gallery-4.jpg", "/gallery-5.jpg"],
@@ -27,14 +39,20 @@ const Navbar = () => {
   return (
     <div className="relative flex gap-5 font-semibold text-lg items-center">
       {navItems.map((item) => {
-        const hasDropdown = item.item === "Men" || item.item === "Women";
+        const isDropdown = item.item === "Men" || item.item === "Women";
+        const categories =
+          item.item === "Men"
+            ? menCategory
+            : item.item === "Women"
+            ? womenCategory
+            : [];
 
         return (
           <div
             key={item.id}
             className="relative"
-            onMouseEnter={() => hasDropdown && setHovered(item.item)}
-            onMouseLeave={() => hasDropdown && setHovered(null)}
+            onMouseEnter={() => isDropdown && setHovered(item.item)}
+            onMouseLeave={() => isDropdown && setHovered(null)}
           >
             {/* Nav Item */}
             <div
@@ -52,7 +70,10 @@ const Navbar = () => {
                 onMouseLeave={() => setHovered(null)}
               >
                 <NavOptionCard
-                  items={dropdownContent[item.item]}
+                  onClick={(index) =>
+                    navigate(`/products/${categories[index].slug}`)
+                  }
+                  items={categories.map((cat) => cat.name)}
                   images={dropdownImages[item.item]}
                 />
               </div>

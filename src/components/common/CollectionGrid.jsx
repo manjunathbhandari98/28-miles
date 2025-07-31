@@ -31,10 +31,13 @@ const CollectionGrid = ({ products, name }) => {
   });
 
   const genders = [...new Set(products.map((p) => p.gender))];
-  const categories = [...new Set(products.map((p) => p.category))];
-  const sizes = [...new Set(products.flatMap((product) => product.size))];
-  const colors = [...new Set(products.map((p) => p.color))];
-  const sleeves = [...new Set(products.map((p) => p.sleeve))];
+  const categories = [...new Set(products.map((p) => p.categoryName))];
+  const sizes = [...new Set(products.flatMap((product) => product.sizes))];
+  const colors = [...new Set(products.flatMap((p) => p.colors))];
+  const sleeves = [
+    ...new Set(products.map((p) => p.productFeatures?.sleeve).filter(Boolean)),
+  ];
+
   const ratings = [
     { label: "4.5 And above", value: 4.5 },
     { label: "4 And above", value: 4 },
@@ -68,25 +71,25 @@ const CollectionGrid = ({ products, name }) => {
 
     if (selectedFilters.category.length) {
       filtered = filtered.filter((p) =>
-        selectedFilters.category.includes(p.category)
+        selectedFilters.category.includes(p.categoryName)
       );
     }
 
     if (selectedFilters.size.length) {
       filtered = filtered.filter((product) =>
-        product.size.some((s) => selectedFilters.size.includes(s))
+        product.sizes.some((s) => selectedFilters.size.includes(s))
       );
     }
 
     if (selectedFilters.color.length) {
-      filtered = filtered.filter((p) =>
-        selectedFilters.color.includes(p.color)
+      filtered = filtered.filter((product) =>
+        product.colors.some((s) => selectedFilters.color.includes(s))
       );
     }
 
     if (selectedFilters.sleeve.length) {
       filtered = filtered.filter((p) =>
-        selectedFilters.sleeve.includes(p.sleeve)
+        selectedFilters.sleeve.includes(p.productFeatures?.sleeve)
       );
     }
 
@@ -216,7 +219,7 @@ const CollectionGrid = ({ products, name }) => {
           {/* Product Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
             {items.map((item) => (
-              <ProductCard key={item.id} item={item} />
+              <ProductCard key={item.productId} item={item} />
             ))}
           </div>
         </div>

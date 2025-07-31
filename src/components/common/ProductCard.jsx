@@ -41,7 +41,7 @@ const ProductCard = ({ item }) => {
             } w-full overflow-hidden`}
           >
             <img
-              src={item.image}
+              src={item.images?.[0]}
               alt={item.name}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />

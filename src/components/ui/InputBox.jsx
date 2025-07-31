@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-const InputBox = ({ label, type = "text", name }) => {
+const InputBox = ({ label, type = "text", name, value, onChange }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [value, setValue] = useState("");
 
   return (
     <div className="relative w-full mt-8">
@@ -12,7 +11,7 @@ const InputBox = ({ label, type = "text", name }) => {
         value={value}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={onChange}
         className="peer w-full border-b-2 border-gray-300 bg-transparent px-1 pt-6 pb-2 text-white
          placeholder-transparent focus:border-white focus:outline-none
          appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
