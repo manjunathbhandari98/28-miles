@@ -1,6 +1,6 @@
 const NavOptionCard = ({ items = [], images, onClick }) => {
   return (
-    <div className="pt-8 bg-transparent">
+    <div className="pt-5 bg-transparent">
       <div className="bg-zinc-900 shadow-xl w-[900px] h-80 flex overflow-hidden border border-zinc-800">
         {/* Left side - Items list */}
         <div className="flex flex-col gap-4 p-6 text-sm uppercase text-zinc-200 tracking-wide w-1/2">

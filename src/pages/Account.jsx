@@ -8,12 +8,15 @@ import {
   SquareChartGantt,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddressesTab from "../components/account/AddressTab";
 import HelpSupportTab from "../components/account/HelpSupportTab";
 import OrdersTab from "../components/account/OrdersTab";
 import OverviewTab from "../components/account/OverviewTab";
+import AddressModalPage from "../components/ui/AddressModal";
+import LoadingPage from "../components/ui/LoadingPage";
+import { AddressModalContext } from "../context/AddressModalContext";
 import { useAuth } from "../hooks/useAuth";
 
 const Account = () => {
@@ -23,6 +26,7 @@ const Account = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [edit, setEdit] = useState(false);
   const { user } = useAuth();
+  const { addressModalOpen } = useContext(AddressModalContext);
 
   const [logoutConfirmationModalOpen, setLogoutConfirmationModalOpen] =
     useState(false);
@@ -59,6 +63,8 @@ const Account = () => {
     logout();
     navigate("/");
   };
+
+  if (!user) return <LoadingPage />;
 
   return (
     <>
@@ -208,6 +214,8 @@ const Account = () => {
           </div>
         </div>
       )}
+
+      {addressModalOpen && <AddressModalPage user={user} />}
     </>
   );
 };

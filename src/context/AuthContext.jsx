@@ -23,8 +23,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token, userData) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData)); // Store user as string
+    localStorage.setItem("user", JSON.stringify(userData));
     setIsAuthenticated(true);
+    setUser(userData);
+  };
+
+  // If you allow profile edit, also update localStorage:
+  const updateUser = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
@@ -37,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, user, setUser }}
+      value={{ isAuthenticated, login, logout, updateUser, user, setUser }}
     >
       {children}
     </AuthContext.Provider>

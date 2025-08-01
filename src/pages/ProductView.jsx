@@ -20,6 +20,7 @@ import SizeChart from "../components/common/SizeChart";
 import ErrorPage from "../components/ui/ErrorPage";
 import LoadingPage from "../components/ui/LoadingPage";
 import { products } from "../data/products";
+import { useWishList } from "../hooks/useWishList";
 import { fetchProductBySlug } from "../service/productService";
 import { useCart } from "./../hooks/useCart";
 
@@ -46,6 +47,9 @@ const ProductView = () => {
   const { handleAddToCart } = useCart();
 
   // const { user, isAuthenticated } = useAuth();
+
+  const { handleAddToWishList, handleRemoveFromWishList, isInWishList } =
+    useWishList();
 
   useEffect(() => {
     const fetchProdut = async () => {
@@ -137,7 +141,6 @@ const ProductView = () => {
     }
   };
 
-
   const onAddToCart = async () => {
     try {
       // Validate selections
@@ -162,6 +165,22 @@ const ProductView = () => {
     } catch (err) {
       console.error(err);
       toast.error("Failed to add item to cart");
+    }
+  };
+
+  const onAddToWishList = async () => {
+    try {
+      const alreadyInWishlist = isInWishList(product.productId);
+      await handleAddToWishList(product.productId);
+
+      toast.success(
+        alreadyInWishlist
+          ? `${product.name} is already in wishlist`
+          : `${product.name} added successfully`
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add item to wishlist");
     }
   };
 
@@ -290,13 +309,14 @@ const ProductView = () => {
                     <div
                       onClick={() => handleSelectColor(colour)}
                       key={colour.id}
+                      title={colour}
                       className={`flex items-center justify-center border-2 cursor-pointer rounded-full h-10 w-10
-    ${
-      selectedColors?.includes(colour)
-        ? "ring-2 ring-offset-2 ring-white"
-        : "ring-1 ring-zinc-700"
-    }
-  `}
+                                  ${
+                                    selectedColors?.includes(colour)
+                                      ? "ring-2 ring-offset-2 ring-white"
+                                      : "ring-1 ring-zinc-700"
+                                  }
+                                `}
                       style={{ backgroundColor: colour }}
                     >
                       {selectedColors?.includes(colour) && (
@@ -356,8 +376,18 @@ const ProductView = () => {
                   <ShoppingBag size={18} />
                   Add to bag
                 </button>
-                <button className="border flex gap-2 p-3 items-center justify-center cursor-pointer uppercase font-bold text-md rounded text-center">
-                  <Heart size={18} />
+                <button
+                  onClick={onAddToWishList}
+                  className="border flex gap-2 p-3 items-center justify-center cursor-pointer uppercase font-bold text-md rounded text-center"
+                >
+                  <Heart
+                    size={18}
+                    className={
+                      isInWishList(product.productId)
+                        ? "text-red-500 fill-red-500"
+                        : "text-white"
+                    }
+                  />
                   Wishlist
                 </button>
               </div>

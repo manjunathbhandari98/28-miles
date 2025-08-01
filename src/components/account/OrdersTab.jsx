@@ -1,7 +1,8 @@
 import { Banknote, ShoppingBag, Truck } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const OrdersTab = () => {
-  const orders = [1]; // Empty list
+  const orders = []; // Empty list
 
   return (
     <div className="text-white space-y-6">
@@ -11,9 +12,12 @@ const OrdersTab = () => {
         <div className="flex flex-col items-center justify-center text-center mt-10 space-y-2 text-gray-400">
           <ShoppingBag size={40} />
           <p>No orders yet.</p>
-          <button className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200">
+          <Link
+            to={"/collection-all"}
+            className="bg-white cursor-pointer text-black px-4 py-2 rounded hover:bg-gray-200"
+          >
             Start Shopping
-          </button>
+          </Link>
         </div>
       ) : (
         orders.map((order) => (

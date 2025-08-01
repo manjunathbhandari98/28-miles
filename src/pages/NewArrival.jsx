@@ -1,6 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import CollectionGrid from "../components/common/CollectionGrid";
+import ErrorPage from "../components/ui/ErrorPage";
+import LoadingPage from "../components/ui/LoadingPage";
 import { fetchNewProducts } from "../service/productService";
 
 const NewArrival = () => {
@@ -33,9 +35,9 @@ const NewArrival = () => {
   return (
     <div className="w-full h-full m-auto pt-16">
       {loading ? (
-        <div className="text-center text-gray-500 text-sm">Loading...</div>
+        <LoadingPage />
       ) : error ? (
-        <div className="text-center text-red-500 text-sm">{error}</div>
+        <ErrorPage message={"Something went wrong"} />
       ) : products.length === 0 ? (
         <div className="text-center text-gray-500 text-sm">
           No products found.

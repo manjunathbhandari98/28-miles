@@ -8,9 +8,9 @@ import BottomBar from "./components/layout/BottomBar";
 import Footer from "./components/layout/Footer";
 import Header from "./components/layout/Header";
 import Sidebar from "./components/layout/Sidebar";
-import { useAuth } from "./hooks/useAuth";
 import AboutUs from "./pages/AboutUs";
 import Account from "./pages/Account";
+import Address from "./pages/Address";
 import AllItems from "./pages/AllItems";
 import CartPage from "./pages/CartPage";
 import CategoryProducts from "./pages/CategoryProducts";
@@ -29,8 +29,6 @@ import Women from "./pages/Women";
 import PrivateRoute from "./routes/PrivateRoutes";
 import PublicRoute from "./routes/PublicRoutes";
 function App() {
-  const { isAuthenticated } = useAuth();
-
   return (
     <>
       <Header />
@@ -49,6 +47,7 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/shipping-returns" element={<ShippingReturns />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/checkout/address" element={<Address />} />
 
         {/* Public Routes */}
         <Route

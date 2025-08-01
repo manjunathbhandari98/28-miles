@@ -11,12 +11,12 @@ const Header = () => {
   const [hidden, setHidden] = useState(false);
   const location = useLocation();
   const isSearchRoute = location.pathname.includes("search");
-  const isCartPage = location.pathname.includes("checkout/cart");
+  const isCheckoutPage = location.pathname.includes("checkout");
   const isLoginPage = location.pathname.includes("auth");
 
   const { cartItems } = useCart();
 
-  if (isCartPage) return null;
+  if (isCheckoutPage) return null;
 
   if (isSearchRoute) return <SearchPage />;
 

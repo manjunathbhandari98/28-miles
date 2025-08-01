@@ -19,7 +19,7 @@ const Footer = () => {
 
   const location = useLocation();
   const isSearchRoute = location.pathname.includes("search");
-  const isCartRoute = location.pathname.includes("cart");
+  const isCheckoutRoute = location.pathname.includes("checkout");
   const isLoginPage = location.pathname.includes("auth");
   const isProfilePage = location.pathname.includes("my-profile");
   const isManagePage = location.pathname.includes("manage");
@@ -27,7 +27,7 @@ const Footer = () => {
 
   if (isSearchRoute) return null;
 
-  if (isCartRoute) return null;
+  if (isCheckoutRoute) return null;
 
   if (isLoginPage) return null;
 

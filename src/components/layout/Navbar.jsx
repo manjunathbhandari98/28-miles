@@ -5,7 +5,7 @@ import NavOptionCard from "../common/NavOptionCard";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [hovered, setHovered] = useState(null); // "Men", "Women", or null
+  const [hovered, setHovered] = useState(null);
 
   const [menCategory, setMenCategory] = useState([]);
   const [womenCategory, setWomenCategory] = useState([]);
@@ -54,30 +54,21 @@ const Navbar = () => {
             onMouseEnter={() => isDropdown && setHovered(item.item)}
             onMouseLeave={() => isDropdown && setHovered(null)}
           >
-            {/* Nav Item */}
-            <div
-              className="cursor-pointer hover:text-amber-300"
-              onClick={() => navigate(item.link)}
-            >
-              {item.item}
-            </div>
+            <div className="cursor-pointer hover:text-amber-300">
+              <div onClick={() => navigate(item.link)}>{item.item}</div>
 
-            {/* Dropdown for Men/Women */}
-            {hovered === item.item && (
-              <div
-                className="fixed left-1/2 top-19 -translate-x-1/2 z-50"
-                onMouseEnter={() => setHovered(item.item)}
-                onMouseLeave={() => setHovered(null)}
-              >
-                <NavOptionCard
-                  onClick={(index) =>
-                    navigate(`/products/${categories[index].slug}`)
-                  }
-                  items={categories.map((cat) => cat.name)}
-                  images={dropdownImages[item.item]}
-                />
-              </div>
-            )}
+              {isDropdown && hovered === item.item && (
+                <div className="absolute left-1/2 top-full translate-x-[-50%] z-50 pt-2">
+                  <NavOptionCard
+                    onClick={(index) =>
+                      navigate(`/products/${categories[index].slug}`)
+                    }
+                    items={categories.map((cat) => cat.name)}
+                    images={dropdownImages[item.item]}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         );
       })}

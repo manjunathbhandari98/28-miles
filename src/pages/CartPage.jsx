@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import CheckoutSteps from "../components/ui/CheckoutSteps";
 import ErrorPage from "../components/ui/ErrorPage";
 import LoadingPage from "../components/ui/LoadingPage";
 import { useAuth } from "../hooks/useAuth";
@@ -118,7 +119,7 @@ const CartPage = () => {
     (sum, item) => sum + item.tax * item.quantity,
     0
   );
-  const grandTotal = subTotal + totalTax;
+  const grandTotal = subTotal;
 
   return (
     <div className="w-full min-h-screen px-4 sm:px-10 py-6 font-sans">
@@ -127,13 +128,7 @@ const CartPage = () => {
         <Link to="/">
           <img src="/28Miles2.png" alt="logo" className="w-20" />
         </Link>
-        <div className="flex gap-4 items-center text-sm uppercase">
-          <span className="text-green-400 font-semibold">Bag</span>
-          <span className="text-gray-400">──────</span>
-          <span className="text-gray-400">Address</span>
-          <span className="text-gray-400">──────</span>
-          <span className="text-gray-400">Payment</span>
-        </div>
+        <CheckoutSteps activeStep={0} />
         <div className="flex gap-2 items-center">
           <img src="/transaction.png" alt="transaction" className="w-5" />
           <span className="text-sm uppercase text-gray-400">100% Payment</span>
@@ -197,9 +192,13 @@ const CartPage = () => {
               Yayy! You get FREE delivery on this order 🎉
             </p>
           </div>
-          <button className="mt-6 cursor-pointer bg-yellow-300 hover:bg-yellow-400 text-black font-semibold py-3 rounded uppercase transition">
+
+          <Link
+            to={"/checkout/address"}
+            className="mt-6 cursor-pointer bg-yellow-300 hover:bg-yellow-400 text-center text-black font-semibold py-3 rounded uppercase transition"
+          >
             Proceed to Checkout
-          </button>
+          </Link>
         </div>
       </div>
     </div>
