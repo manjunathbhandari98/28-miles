@@ -19,6 +19,8 @@ import LoginPage from "./pages/LoginPage";
 import Men from "./pages/Men";
 import NewArrival from "./pages/NewArrival";
 import OtpVerificationPage from "./pages/OTPVerification";
+import PaymentPage from "./pages/PaymentPage";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import PrivacyPolicy from "./pages/Policy";
 import ProductView from "./pages/ProductView";
 import RegisterPage from "./pages/RegisterPage";
@@ -44,10 +46,12 @@ function App() {
         <Route path="/products/:slug" element={<CategoryProducts />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/checkout/cart" element={<CartPage />} />
+        <Route path="/checkout/address" element={<Address />} />
+        <Route path="/checkout/payment/:orderId" element={<PaymentPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/shipping-returns" element={<ShippingReturns />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/checkout/address" element={<Address />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
 
         {/* Public Routes */}
         <Route

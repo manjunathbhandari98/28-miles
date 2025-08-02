@@ -13,6 +13,7 @@ const Header = () => {
   const isSearchRoute = location.pathname.includes("search");
   const isCheckoutPage = location.pathname.includes("checkout");
   const isLoginPage = location.pathname.includes("auth");
+  const isPaymentPage = location.pathname.includes("payment");
 
   const { cartItems } = useCart();
 
@@ -21,6 +22,8 @@ const Header = () => {
   if (isSearchRoute) return <SearchPage />;
 
   if (isLoginPage) return null;
+
+  if (isPaymentPage) return null;
 
   return (
     <div className="fixed flex flex-col top-0 left-0 w-full z-50">

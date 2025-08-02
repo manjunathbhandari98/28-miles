@@ -1,0 +1,43 @@
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const token = localStorage.getItem("token");
+
+export const placeOrders = async (orderData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/orders`, orderData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getOrders = async (userId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/orders/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getCurrentOrders = async (orderId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/orders/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

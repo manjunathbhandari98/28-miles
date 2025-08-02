@@ -1,8 +1,30 @@
 import { ChevronLeft, Mail, MessageCircleQuestion, Phone } from "lucide-react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const HelpSupport = () => {
   const navigate = useNavigate();
+
+  // automatically redirect to /my-profile when screen size is md or larger.
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        navigate("/my-profile", { replace: true });
+      }
+    };
+
+    // Check immediately when mounted
+    handleResize();
+
+    // Add listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [navigate]);
 
   const faqs = [
     {
