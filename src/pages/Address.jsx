@@ -29,7 +29,7 @@ const Address = () => {
   });
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { cartItems, cart, clearCart } = useCart();
+  const { cartItems, cart } = useCart();
   const { selectedAddress, setSelectedAddress } =
     useContext(AddressModalContext);
 
@@ -168,14 +168,7 @@ const Address = () => {
           navigate(`/checkout/payment/${orderId}`);
         } else {
           // For COD, clear cart and go to success page
-          clearCart?.();
-          navigate("/order-success", {
-            state: {
-              orderId,
-              orderData: res,
-              paymentMethod: "CASH",
-            },
-          });
+          navigate(`/order-success/${orderId}`);
         }
       } else {
         throw new Error("Order ID not returned from server");
@@ -496,14 +489,16 @@ const Address = () => {
                 </div>
               )}
               <div className="flex justify-between items-center border-t border-gray-700 pt-3">
-                <span className="text-lg font-bold text-white">Total</span>
+                <span className="text-lg font-semibold text-white">
+                  Subtotal
+                </span>
                 <span className="text-base font-medium text-white">
                   {RUPEE_SYMBOL}
-                  {cart.totalTax}
+                  {cart.totalTax + cart.grandTotal}
                 </span>
               </div>
               <div className="flex justify-between items-center border-t border-gray-700 pt-3">
-                <span className="text-lg font-bold text-white">Total</span>
+                <span className="text-lg font-bold text-yellow-400">Total</span>
                 <span className="text-lg font-bold text-yellow-400">
                   {RUPEE_SYMBOL}
                   {amountPayable}
@@ -516,7 +511,7 @@ const Address = () => {
             onClick={handleOrder}
             className="mt-6 cursor-pointer bg-yellow-300 hover:bg-yellow-400 text-center text-black font-semibold py-3 rounded uppercase transition"
           >
-            Continue Payment
+            {selectedMethod === 0 ? "Continue Payment" : "Place Order"}
           </button>
         </div>
       </div>

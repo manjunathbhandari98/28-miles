@@ -1,16 +1,32 @@
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getCategoriesByGender } from "../../service/categoryService";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef(null);
   const navigate = useNavigate();
+  const [menCategory, setMenCategory] = useState([]);
+  const [womenCategory, setWomenCategory] = useState([]);
+  const [menOpen, setMenOpen] = useState(false);
+  const [womenOpen, setWomenOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchMenCategory = async () => {
+      const res = await getCategoriesByGender("Men");
+      setMenCategory(res || []);
+    };
+    const fetchWomenCategory = async () => {
+      const res = await getCategoriesByGender("Women");
+      setWomenCategory(res || []);
+    };
+    fetchMenCategory();
+    fetchWomenCategory();
+  }, []);
 
   const navItems = [
     { id: 1, item: "New Arrivals", link: "/new-arrivals" },
-    { id: 2, item: "Men", link: "/collection-men" },
-    { id: 3, item: "Women", link: "/collection-women" },
     { id: 4, item: "Shop All", link: "/collection-all" },
     { id: 5, item: "About Us", link: "/about-us" },
   ];
@@ -112,6 +128,53 @@ const Sidebar = () => {
             <h3 className="text-gray-400 uppercase text-xs tracking-wide">
               Shop In
             </h3>
+            {/* MEN CATEGORY DROPDOWN */}
+            <div>
+              <div
+                onClick={() => setMenOpen(!menOpen)}
+                className="text-base font-medium py-1 px-2 rounded-md hover:bg-white/10 cursor-pointer transition flex justify-between items-center"
+              >
+                <span>Men</span>
+                <span>{menOpen ? "−" : "+"}</span>
+              </div>
+              {menOpen && (
+                <div className="ml-4 mt-2 flex flex-col gap-4">
+                  {menCategory.map((cat) => (
+                    <div
+                      key={cat.categoryId}
+                      onClick={() => handleNavigate(`/products/${cat.slug}`)}
+                      className="text-sm text-gray-300 hover:underline cursor-pointer"
+                    >
+                      {cat.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* WOMEN CATEGORY DROPDOWN */}
+            <div>
+              <div
+                onClick={() => setWomenOpen(!womenOpen)}
+                className="text-base font-medium py-1 px-2 rounded-md hover:bg-white/10 cursor-pointer transition ease-out flex justify-between items-center"
+              >
+                <span>Women</span>
+                <span>{womenOpen ? "−" : "+"}</span>
+              </div>
+              {womenOpen && (
+                <div className="ml-4 mt-2 flex flex-col gap-4">
+                  {womenCategory.map((cat) => (
+                    <div
+                      key={cat.categoryId}
+                      onClick={() => handleNavigate(`/products/${cat.slug}`)}
+                      className="text-sm text-gray-300 hover:underline cursor-pointer"
+                    >
+                      {cat.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             {navItems.map((nav) => (
               <div
                 key={nav.id}

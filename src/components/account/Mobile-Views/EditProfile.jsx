@@ -1,22 +1,43 @@
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
+import { updateUser } from "../../../service/userService";
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useAuth();
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
 
-  const [name, setName] = useState("John Doe");
-  const [phone, setPhone] = useState("9876543210");
-  const [email, setEmail] = useState("john@example.com");
+  // Pre-fill formData with current user data
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        phone: user.phone || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
 
-  const handleSave = () => {
-    // Save logic here
-    console.log("Saved:", { name, phone, email });
-    navigate(-1);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // automatically redirect to /my-profile when screen size is md or larger.
+  const handleSave = async () => {
+    try {
+      const res = await updateUser(user.userId, formData);
+      setUser(res); // ✅ Update user context
+      toast.success("Profile updated");
+      navigate("/my-profile"); // ✅ Optionally redirect back
+    } catch (err) {
+      toast.error("Update failed. Try again.");
+    }
+  };
 
+  // Redirect to /my-profile if screen width is ≥ 768px
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -24,16 +45,9 @@ const EditProfile = () => {
       }
     };
 
-    // Check immediately when mounted
     handleResize();
-
-    // Add listener
     window.addEventListener("resize", handleResize);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, [navigate]);
 
   return (
@@ -54,9 +68,10 @@ const EditProfile = () => {
             </label>
             <input
               type="text"
+              name="name"
               className="w-full px-4 py-2 bg-zinc-900 text-white rounded-lg border border-zinc-800 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Enter your full name"
             />
           </div>
@@ -67,9 +82,10 @@ const EditProfile = () => {
             </label>
             <input
               type="tel"
+              name="phone"
               className="w-full px-4 py-2 bg-zinc-900 text-white rounded-lg border border-zinc-800 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={formData.phone}
+              onChange={handleChange}
               placeholder="Enter your phone number"
             />
           </div>
@@ -80,9 +96,10 @@ const EditProfile = () => {
             </label>
             <input
               type="email"
+              name="email"
               className="w-full px-4 py-2 bg-zinc-900 text-white rounded-lg border border-zinc-800 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Enter your email address"
             />
           </div>

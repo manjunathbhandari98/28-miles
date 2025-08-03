@@ -4,6 +4,7 @@ import EditProfile from "./components/account/Mobile-Views/EditProfile";
 import HelpSupport from "./components/account/Mobile-Views/HelpSupport";
 import ManageAdress from "./components/account/Mobile-Views/ManageAdress";
 import ManageOrders from "./components/account/Mobile-Views/ManageOrders";
+import OrderView from "./components/account/OrderView";
 import BottomBar from "./components/layout/BottomBar";
 import Footer from "./components/layout/Footer";
 import Header from "./components/layout/Header";
@@ -18,6 +19,7 @@ import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import Men from "./pages/Men";
 import NewArrival from "./pages/NewArrival";
+import OrderSuccess from "./pages/OrderSuccessPage";
 import OtpVerificationPage from "./pages/OTPVerification";
 import PaymentPage from "./pages/PaymentPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -127,6 +129,22 @@ function App() {
           element={
             <PrivateRoute>
               <Wishlist />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/order-success/:orderId"
+          element={
+            <PrivateRoute>
+              <OrderSuccess />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/my-profile/order/:orderId"
+          element={
+            <PrivateRoute>
+              <OrderView />
             </PrivateRoute>
           }
         />

@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter } from "react-router-dom";
@@ -10,18 +9,16 @@ import { WishListProvider } from "./context/WishlistContext.jsx";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <AddressModalProvider>
-          <CartProvider>
-            <WishListProvider>
-              <Toaster />
-              <App />
-            </WishListProvider>
-          </CartProvider>
-        </AddressModalProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter>
+    <AuthProvider>
+      <AddressModalProvider>
+        <CartProvider>
+          <WishListProvider>
+            <Toaster />
+            <App />
+          </WishListProvider>
+        </CartProvider>
+      </AddressModalProvider>
+    </AuthProvider>
+  </BrowserRouter>
 );

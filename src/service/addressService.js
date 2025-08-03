@@ -29,6 +29,18 @@ export const addAddress = async (userId, addressData) => {
   }
 };
 
+export const updateAddress = async (addressId, addressData) => {
+  try {
+    await axios.put(`${BASE_URL}/addresses/update/${addressId}`, addressData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const deleteAddress = async (addressId) => {
   try {
     await axios.delete(`${BASE_URL}/addresses/${addressId}`, {

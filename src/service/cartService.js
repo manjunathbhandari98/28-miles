@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const token = localStorage.getItem("token");
 
 export const addToCart = async (cartData) => {
   try {
@@ -18,18 +19,20 @@ export const getCartItems = async (userId) => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    return response.data;
+    return response.data || { items: [], cartId: null };
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching cart:", error);
+    return { items: [], cartId: null }; // fallback
   }
 };
 
 export const getGuestCartItems = async (cartId) => {
   try {
     const response = await axios.get(`${BASE_URL}/cart/guest/${cartId}`);
-    return response.data;
+    return response?.data || { items: [], id: cartId };
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching guest cart:", error);
+    return { items: [], id: cartId }; // fallback
   }
 };
 
@@ -94,7 +97,7 @@ export const mergeCartItem = async (guestCartId, userId) => {
       "",
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -108,4 +111,16 @@ export const generateGuestCartId = () => {
   const newId = crypto.randomUUID(); // or any unique ID generator
   localStorage.setItem("guestCartId", newId);
   return newId;
+};
+
+export const deleteCartById = async (id) => {
+  try {
+    await axios.delete(`${BASE_URL}/cart/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
 };

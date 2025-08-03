@@ -1,14 +1,13 @@
 import { Download } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LoadingPage from "../components/ui/LoadingPage";
+import { useCart } from "../hooks/useCart";
 import { getCurrentOrders } from "../service/orderService";
-import { useCart } from "./../hooks/useCart";
 
-const PaymentSuccess = () => {
+const OrderSuccess = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { razorpay_payment_id, orderId } = location.state || {};
+  const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const receiptRef = useRef();
@@ -21,6 +20,7 @@ const PaymentSuccess = () => {
         setLoading(true);
         const res = await getCurrentOrders(orderId);
         setOrder(res);
+        refreshCart();
       } catch (error) {
         console.error(error);
       } finally {
@@ -28,7 +28,7 @@ const PaymentSuccess = () => {
       }
     };
     fetchOrders();
-  }, [orderId, refreshCart]);
+  }, [orderId]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -45,27 +45,27 @@ const PaymentSuccess = () => {
     const printWindow = window.open("", "", "width=800,height=600");
 
     printWindow.document.write(`
- <html>
- <head>
- <title>Payment Receipt</title>
- <link rel="stylesheet" href="/src/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
- <style>
- @media print {
-body {
--webkit-print-color-adjust: exact;
-print-color-adjust: exact;
-}
- }
- </style>
- </head>
- <body class="bg-gray-900 text-white">
- <div class="p-6">
- ${printContents}
- </div>
- </body>
- </html>
-`);
+      <html>
+      <head>
+        <title>Order Receipt</title>
+        <link rel="stylesheet" href="/src/index.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+        <style>
+          @media print {
+            body {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+          }
+        </style>
+      </head>
+      <body class="bg-gray-900 text-white">
+        <div class="p-6">
+          ${printContents}
+        </div>
+      </body>
+      </html>
+    `);
 
     printWindow.document.close();
     printWindow.focus();
@@ -80,10 +80,10 @@ print-color-adjust: exact;
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-zinc-900 to-gray-900 text-white flex flex-col items-center justify-center px-4 py-12">
       <div className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-lg">
-        {/* Success Icon */}
         <div ref={receiptRef} className="print">
+          {/* Header */}
           <div className="mb-6 flex flex-col items-center">
-            <div className="inline-block bg-green-600 shadow-lg rounded-full p-4 animate-bounce">
+            <div className="inline-block bg-yellow-600 shadow-lg rounded-full p-4 animate-bounce">
               <svg
                 className="w-9 h-9 text-white"
                 fill="none"
@@ -98,12 +98,13 @@ print-color-adjust: exact;
                 />
               </svg>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold mt-3 mb-1 tracking-wide text-green-400 drop-shadow">
-              Payment Successful!
+            <h1 className="text-2xl md:text-3xl font-bold mt-3 mb-1 tracking-wide text-yellow-400 drop-shadow">
+              Order Placed Successfully!
             </h1>
-            <p className="text-zinc-400 mb-4 text-base">
-              Thank you for shopping with{" "}
-              <span className="text-white font-medium">28 Miles</span>.
+            <p className="text-zinc-400 mb-4 text-base text-center">
+              Your Cash on Delivery order has been placed.
+              <br />
+              We'll notify you once it's shipped!
             </p>
           </div>
 
@@ -115,22 +116,24 @@ print-color-adjust: exact;
                 <span className="text-white font-bold">{orderId}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Payment ID:</span>
-                <span>{razorpay_payment_id || "-"}</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-zinc-400">Order Date:</span>
                 <span>{today}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Amount Paid:</span>
-                <span className="text-green-300 font-semibold">
+                <span className="text-zinc-400">Amount Payable:</span>
+                <span className="text-yellow-300 font-semibold">
                   ₹{order.totalAmount}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Payment Mode:</span>
+                <span className="text-zinc-300 font-medium">
+                  Cash on Delivery
                 </span>
               </div>
             </div>
 
-            {/* Shipping */}
+            {/* Shipping Address */}
             <div className="border-t border-zinc-700 mt-2 pt-2 text-xs text-zinc-400">
               <div className="font-semibold text-zinc-300 mb-1">
                 Shipping Address:
@@ -158,7 +161,7 @@ print-color-adjust: exact;
             </div>
           </div>
 
-          {/* Products List */}
+          {/* Product List */}
           <div className="bg-zinc-900/80 rounded-xl shadow-inner p-4 mb-4">
             <div className="font-semibold text-zinc-300 mb-2">
               Items Ordered:
@@ -195,14 +198,15 @@ print-color-adjust: exact;
             </ul>
           </div>
         </div>
-        {/* Action Buttons */}
+
+        {/* Actions */}
         <div className="mt-4 flex flex-wrap gap-3 justify-center">
           <button
             onClick={handlePrint}
-            className="flex items-center gap-2 bg-gradient-to-tr from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-5 rounded-lg shadow transition"
+            className="flex items-center gap-2 bg-gradient-to-tr from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-semibold py-2 px-5 rounded-lg shadow transition"
           >
             <Download />
-            Download Receipt
+            Print Receipt
           </button>
           <button
             onClick={() => navigate("/")}
@@ -222,4 +226,4 @@ print-color-adjust: exact;
   );
 };
 
-export default PaymentSuccess;
+export default OrderSuccess;

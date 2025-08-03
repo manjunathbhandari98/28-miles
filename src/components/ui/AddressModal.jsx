@@ -3,7 +3,7 @@ import { Check, X } from "lucide-react"; // Or any close icon you use
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AddressModalContext } from "../../context/AddressModalContext";
-import { addAddress } from "../../service/addressService";
+import { addAddress, updateAddress } from "../../service/addressService";
 import BorderInputBox from "./BorderInputBox";
 
 const AddressModalPage = ({ user }) => {
@@ -49,7 +49,7 @@ const AddressModalPage = ({ user }) => {
     e.preventDefault();
     const addressData = {
       ...formData,
-      isDefult: defaultAddress,
+      defaultAddress: defaultAddress,
     };
 
     try {
@@ -69,6 +69,33 @@ const AddressModalPage = ({ user }) => {
       });
     } catch (error) {
       toast.error("Failed to save address!");
+    }
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    const addressData = {
+      ...formData,
+      defaultAddress: defaultAddress,
+    };
+
+    try {
+      await updateAddress(selectedAddress.addressId, addressData);
+      toast.success("Address Updated Successfully");
+      loadAddresses();
+      onCloseAddressModal();
+      setFormData({
+        fullName: "",
+        phone: "",
+        email: "",
+        street: "",
+        city: "",
+        state: "",
+        country: "",
+        postalCode: "",
+      });
+    } catch (error) {
+      toast.error("Failed to update address!");
     }
   };
 
@@ -105,7 +132,7 @@ const AddressModalPage = ({ user }) => {
 
         {/* Form - scrollable if overflow */}
         <form
-          onSubmit={handleSubmit}
+          onSubmit={selectedAddress ? handleEdit : handleSubmit}
           className="p-6 flex-grow overflow-y-auto scrollbar-hide space-y-5 no-scrollbar"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,11 +1,13 @@
+import { Pencil, Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-// import { updateUser } from "../../services/userService";
+import { useAuth } from "../../hooks/useAuth";
+import { updateUser } from "../../service/userService";
 import InputBox from "../ui/InputBox";
 
 const OverviewTab = ({ name, phone, email, edit, setEdit }) => {
   const [formData, setFormData] = useState({ name, phone, email });
-  // const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,43 +16,57 @@ const OverviewTab = ({ name, phone, email, edit, setEdit }) => {
 
   const handleSave = async () => {
     try {
-      // const updatedUser = await updateUser(formData);
+      const res = await updateUser(user.userId, formData);
       toast.success("Profile updated");
-      // setUser(updatedUser); // update in context
+      setUser(res);
       setEdit(false);
     } catch (err) {
       toast.error("Update failed. Try again.");
-      throw new err();
     }
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Account Overview</h2>
+    <div className="hidden md:block max-w-2xl mx-auto mt-26 p-8 rounded-lg border border-zinc-700 shadow-md space-y-10">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold tracking-wide text-zinc-200 drop-shadow-sm">
+          Account Overview
+        </h2>
         <button
           onClick={() => (edit ? handleSave() : setEdit(true))}
-          className="px-4 py-2 text-sm bg-white text-black rounded hover:bg-gray-200 font-semibold"
+          className="flex items-center gap-2 px-5 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 text-white rounded transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-zinc-600"
+          aria-label={edit ? "Save profile" : "Edit profile"}
         >
+          {edit ? <Save size={18} /> : <Pencil size={18} />}
           {edit ? "Save" : "Edit"}
         </button>
       </div>
 
-      <div className="flex flex-col gap-5">
+      {/* Profile Info / Form */}
+      <div className="flex flex-col gap-6">
         {!edit ? (
           <>
-            <h2 className="text-lg">
-              <span className="font-medium text-gray-400">Full Name:</span>{" "}
-              {formData.name}
-            </h2>
-            <h2 className="text-lg">
-              <span className="font-medium text-gray-400">Phone:</span>{" "}
-              {formData.phone}
-            </h2>
-            <h2 className="text-lg">
-              <span className="font-medium text-gray-400">Email:</span>{" "}
-              {formData.email}
-            </h2>
+            {/** Display each item in a flex spaced pair */}
+            <div className="flex justify-between border-b border-zinc-700 pb-3">
+              <p className="text-zinc-500 font-medium tracking-wide">
+                Full Name
+              </p>
+              <p className="text-zinc-300 truncate max-w-[60%] text-right">
+                {user.name}
+              </p>
+            </div>
+            <div className="flex justify-between border-b border-zinc-700 pb-3">
+              <p className="text-zinc-500 font-medium tracking-wide">Phone</p>
+              <p className="text-zinc-300 truncate max-w-[60%] text-right">
+                {user.phone}
+              </p>
+            </div>
+            <div className="flex justify-between border-b border-zinc-700 pb-3">
+              <p className="text-zinc-500 font-medium tracking-wide">Email</p>
+              <p className="text-zinc-300 truncate max-w-[60%] text-right">
+                {user.email}
+              </p>
+            </div>
           </>
         ) : (
           <>
@@ -59,13 +75,16 @@ const OverviewTab = ({ name, phone, email, edit, setEdit }) => {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              autoFocus
+              className="bg-transparent border-b border-zinc-600 focus:border-zinc-400 text-zinc-200"
             />
             <InputBox
               label="Phone Number"
               name="phone"
-              type="number"
+              type="tel"
               value={formData.phone}
               onChange={handleChange}
+              className="bg-transparent border-b border-zinc-600 focus:border-zinc-400 text-zinc-200"
             />
             <InputBox
               label="Email"
@@ -73,6 +92,7 @@ const OverviewTab = ({ name, phone, email, edit, setEdit }) => {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              className="bg-transparent border-b border-zinc-600 focus:border-zinc-400 text-zinc-200"
             />
           </>
         )}

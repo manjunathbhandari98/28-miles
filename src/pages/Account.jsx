@@ -69,40 +69,35 @@ const Account = () => {
   return (
     <>
       {/* Desktop View */}
-      <div className="md:block hidden pt-30">
-        <div className="flex justify-between items-center p-4 rounded-2xl bg-black/30 backdrop-blur-sm shadow-lg w-full ">
-          {tabs.map((tab, index) => (
-            <div
-              key={index}
-              onClick={tab.onClick}
-              className={`flex gap-3 items-center px-5 py-4 mb-3 rounded-xl cursor-pointer transition-all duration-300
+      <div className="hidden md:flex w-full h-screen pt-20 rounded-3xl shadow-lg overflow-hidden">
+        {/* Sidebar */}
+        <aside className="w-72 h-screen border-gray-300 flex flex-col py-14 px-6 bg-zinc-950">
+          <h2 className="text-2xl font-semibold mb-8 text-gray-300 tracking-wide">
+            My Account
+          </h2>
+
+          <nav className="flex flex-col space-y-3">
+            {tabs.map((tab, index) => (
+              <button
+                key={index}
+                onClick={tab.onClick}
+                className={`flex items-center gap-4 px-5 py-3 rounded-xl transition-colors duration-300 focus:outline-none
             ${
               activeTab === index
-                ? "bg-white/10 border border-white/30 shadow-inner scale-[1.02] last:scale-[1] last:bg-transparent last:border-none"
-                : "hover:bg-white/5 hover:scale-[1.01] last:hover:bg-transparent"
+                ? "bg-black text-white shadow-md"
+                : "text-gray-300 hover:bg-black"
             }`}
-            >
-              <div
-                className={`text-xl ${
-                  activeTab === index ? "text-white" : "text-gray-400"
-                }`}
+                aria-current={activeTab === index ? "page" : undefined}
               >
-                {tab.icon}
-              </div>
-              <h3
-                className={`text-base uppercase font-semibold tracking-wide transition-all ${
-                  activeTab === index
-                    ? "text-white last:text-gray-400"
-                    : "text-gray-400"
-                }`}
-              >
-                {tab.title}
-              </h3>
-            </div>
-          ))}
-        </div>
+                <span className="text-xl">{tab.icon}</span>
+                <span className="text-md font-medium">{tab.title}</span>
+              </button>
+            ))}
+          </nav>
+        </aside>
 
-        <div className="w-full p-6 bg-black/20 rounded-2xl shadow-inner backdrop-blur">
+        {/* Main Content */}
+        <main className="flex-1 px-10 py-6 overflow-auto">
           {activeTab === 0 && (
             <OverviewTab
               name={user.name}
@@ -115,7 +110,7 @@ const Account = () => {
           {activeTab === 1 && <OrdersTab />}
           {activeTab === 2 && <AddressesTab />}
           {activeTab === 3 && <HelpSupportTab />}
-        </div>
+        </main>
       </div>
 
       {/* Mobile View */}

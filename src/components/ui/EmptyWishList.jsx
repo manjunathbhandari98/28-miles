@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const EmptyWishlist = () => {
   return (
-    <div className="pt-36 h-screen flex flex-col items-center justify-start text-white">
+    <div className="sm:pt-36 px-5 text-center h-screen flex flex-col items-center justify-start text-white">
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}

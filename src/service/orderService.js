@@ -29,6 +29,19 @@ export const getOrders = async (userId) => {
   }
 };
 
+export const getOrderById = async (orderId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/orders/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getCurrentOrders = async (orderId) => {
   try {
     const response = await axios.get(`${BASE_URL}/orders/${orderId}`, {
@@ -37,6 +50,31 @@ export const getCurrentOrders = async (orderId) => {
       },
     });
     return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const trackOrder = async (orderId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/orders/track/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const cancelOrder = async (orderId) => {
+  try {
+    await axios.delete(`${BASE_URL}/orders/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     console.log(error);
   }

@@ -14,6 +14,7 @@ const Header = () => {
   const isCheckoutPage = location.pathname.includes("checkout");
   const isLoginPage = location.pathname.includes("auth");
   const isPaymentPage = location.pathname.includes("payment");
+  const isOrderSuccessPage = location.pathname.includes("order");
 
   const { cartItems } = useCart();
 
@@ -24,6 +25,8 @@ const Header = () => {
   if (isLoginPage) return null;
 
   if (isPaymentPage) return null;
+
+  if (isOrderSuccessPage) return null;
 
   return (
     <div className="fixed flex flex-col top-0 left-0 w-full z-50">
@@ -47,9 +50,12 @@ const Header = () => {
             className="relative cursor-pointer group"
             onClick={() => navigate("/checkout/cart")}
           >
-            <div className="absolute -top-3 -right-2 bg-red-600 text-white text-[10px] font-semibold h-5 w-5 flex items-center justify-center rounded-full shadow-md group-hover:scale-110 transition">
-              {cartItems.length}
-            </div>
+            {cartItems.length > 0 && (
+              <div className="absolute -top-3 -right-2 bg-red-600 text-white text-[10px] font-semibold h-5 w-5 flex items-center justify-center rounded-full shadow-md group-hover:scale-110 transition">
+                {cartItems.length}
+              </div>
+            )}
+
             <ShoppingBag size={24} />
           </div>
 

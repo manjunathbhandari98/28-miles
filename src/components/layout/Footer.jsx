@@ -25,6 +25,7 @@ const Footer = () => {
   const isManagePage = location.pathname.includes("manage");
   const isHelpSupportPage = location.pathname.includes("help-and-support");
 
+  const isOrderSuccessPage = location.pathname.includes("order");
   const isPaymentPage = location.pathname.includes("payment");
 
   if (isSearchRoute) return null;
@@ -39,6 +40,7 @@ const Footer = () => {
   if (isHelpSupportPage) return null;
 
   if (isPaymentPage) return null;
+  if (isOrderSuccessPage) return null;
 
   return (
     <footer className="mt-20 px-6 md:px-20 py-16">
