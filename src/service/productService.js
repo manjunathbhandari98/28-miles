@@ -69,3 +69,14 @@ export const fetchProductById = async (id) => {
     throw error;
   }
 };
+
+export const getSimilarProducts = async (categoryId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/products/category/${categoryId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

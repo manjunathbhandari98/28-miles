@@ -26,6 +26,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PrivacyPolicy from "./pages/Policy";
 import ProductView from "./pages/ProductView";
 import RegisterPage from "./pages/RegisterPage";
+import ReviewPage from "./pages/ReviewPage";
 import ShippingReturns from "./pages/ShippiingReturns";
 import TermsAndConditions from "./pages/TermsCondition";
 import Wishlist from "./pages/Wishlist";
@@ -54,6 +55,7 @@ function App() {
         <Route path="/shipping-returns" element={<ShippingReturns />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/product-reviews" element={<ReviewPage />} />
 
         {/* Public Routes */}
         <Route

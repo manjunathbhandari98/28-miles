@@ -79,3 +79,28 @@ export const cancelOrder = async (orderId) => {
     console.log(error);
   }
 };
+
+export const requestReturn = async (returnData) => {
+  try {
+    await axios.post(`${BASE_URL}/return/request`, returnData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getReturnStatus = async (orderId) => {
+  try {
+    const res = axios.get(`${BASE_URL}/return/status/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+};

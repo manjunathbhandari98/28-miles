@@ -14,14 +14,16 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/common/ProductCard";
 import SizeChart from "../components/common/SizeChart";
 import ErrorPage from "../components/ui/ErrorPage";
 import LoadingPage from "../components/ui/LoadingPage";
-import { products } from "../data/products";
 import { useWishList } from "../hooks/useWishList";
-import { fetchProductBySlug } from "../service/productService";
+import {
+  fetchProductBySlug,
+  getSimilarProducts,
+} from "../service/productService";
 import { useCart } from "./../hooks/useCart";
 
 const ProductView = () => {
@@ -30,12 +32,14 @@ const ProductView = () => {
   const [pinCode, setPinCode] = useState(null);
   const [showDeleveryDate, setShowDeleveryDate] = useState(false);
   const [product, setProduct] = useState(null);
-  // const [similarProducts, setSimilarProducts] = useState([]);
+  const [similarProducts, setSimilarProducts] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isInputSelected, setIsInputSelected] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const navigate = useNavigate();
   const scrollRef = useRef(null);
   const { slug } = useParams();
 
@@ -48,8 +52,7 @@ const ProductView = () => {
 
   // const { user, isAuthenticated } = useAuth();
 
-  const { handleAddToWishList, handleRemoveFromWishList, isInWishList } =
-    useWishList();
+  const { handleAddToWishList, isInWishList } = useWishList();
 
   useEffect(() => {
     const fetchProdut = async () => {
@@ -57,10 +60,8 @@ const ProductView = () => {
         setLoading(true);
         const res = await fetchProductBySlug(slug);
         setProduct(res);
+        setReviews(res.reviews.map((reviews) => reviews));
 
-        // Optionally load similar products
-        // const similar = await fetchSimilarProducts(res.categoryId);
-        // setSimilarProducts(similar);
         setError(null);
       } catch (error) {
         console.error(error);
@@ -73,8 +74,33 @@ const ProductView = () => {
     fetchProdut();
   }, [slug]);
 
+  useEffect(() => {
+    const fetchSimilarProducts = async () => {
+      if (!product) return;
+      try {
+        setLoading(true);
+        const res = await getSimilarProducts(product.categoryId);
+        setSimilarProducts(res.content);
+        setError(null);
+      } catch (error) {
+        console.error(error);
+        setError("Category Doesn't Exist");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSimilarProducts();
+  }, [product]);
+  const filteredSimilar = similarProducts?.filter(
+    (sp) => sp.productId !== product.productId
+  );
   const MAX_VISIBLE = 3;
-  const remainingCount = product?.images.length - MAX_VISIBLE;
+  const reviewImages = reviews
+    .flatMap((r) => r.images ?? []) // collects all images, skips nulls
+    .slice(0, MAX_VISIBLE);
+
+  const moreCount = reviews.flatMap((r) => r.images ?? []).length - MAX_VISIBLE;
 
   const handleScroll = () => {
     const scrollX = scrollRef.current?.scrollLeft || 0;
@@ -274,7 +300,7 @@ const ProductView = () => {
             Home/Men/Denim-Jacket
           </h1> */}
               <h1 className="text-xl font-bold uppercase">{product?.name}</h1>
-              <h3 className="text-md text-gray-300">{product?.description}</h3>
+              <h3 className="text-md text-gray-300">{product?.summary}</h3>
               <div className="flex justify-between items-center">
                 {/* price */}
                 <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -489,40 +515,37 @@ const ProductView = () => {
                 </div>
 
                 {/* Product Description */}
-                <div className="flex flex-col border-b border-white/10 pb-4">
-                  <div
-                    className="flex justify-between items-center cursor-pointer"
-                    onClick={() => toggleSection("description")}
-                  >
-                    <h3 className="text-md">Product Description</h3>
-                    {activeSection === "description" ? (
-                      <Minus size={18} />
-                    ) : (
-                      <Plus size={18} />
-                    )}
+                {product.description && (
+                  <div className="flex flex-col border-b border-white/10 pb-4">
+                    <div
+                      className="flex justify-between items-center cursor-pointer"
+                      onClick={() => toggleSection("description")}
+                    >
+                      <h3 className="text-md">Product Description</h3>
+                      {activeSection === "description" ? (
+                        <Minus size={18} />
+                      ) : (
+                        <Plus size={18} />
+                      )}
+                    </div>
+                    <AnimatePresence>
+                      {activeSection === "description" && (
+                        <motion.p
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden text-sm text-zinc-300 mt-2"
+                        >
+                          {product.description}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <AnimatePresence>
-                    {activeSection === "description" && (
-                      <motion.p
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden text-sm text-zinc-300 mt-2"
-                      >
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Dolorem, velit tempora? Adipisci corporis id delectus
-                        praesentium nulla corrupti illo dicta, repudiandae ipsam
-                        ipsa omnis. Culpa nobis molestiae molestias quas porro
-                        maiores beatae quod voluptatibus inventore ipsum? Sequi
-                        voluptate ut repellat!
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </div>
+                )}
 
                 {/* Return and Exchange */}
-                <div className="flex flex-col  pb-4">
+                <div className="flex flex-col pb-4">
                   <div
                     className="flex justify-between items-center cursor-pointer"
                     onClick={() => toggleSection("returnspolicy")}
@@ -543,12 +566,20 @@ const ProductView = () => {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden text-sm text-zinc-300 mt-2"
                       >
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Dolorem, velit tempora? Adipisci corporis id delectus
-                        praesentium nulla corrupti illo dicta, repudiandae ipsam
-                        ipsa omnis. Culpa nobis molestiae molestias quas porro
-                        maiores beatae quod voluptatibus inventore ipsum? Sequi
-                        voluptate ut repellat!
+                        We want you to be fully satisfied with your purchase. If
+                        you are not completely happy with your order, you may
+                        return most items within 7 days of delivery for a full
+                        refund or exchange. To be eligible for a return, items
+                        must be unused, in original packaging, and in the same
+                        condition as when you received them. Some exclusions may
+                        apply (e.g., personalized or final sale items). To
+                        initiate a return, please contact our customer support
+                        team with your order details. Refunds will be processed
+                        to the original payment method within 7-10 business days
+                        after we receive and inspect the returned item. Shipping
+                        charges are non-refundable. If the return is a result of
+                        our error or defective product, we will gladly cover the
+                        return shipping cost.
                       </motion.p>
                     )}
                   </AnimatePresence>
@@ -574,26 +605,25 @@ const ProductView = () => {
                         <Star fill="black" size={14} color="black" />
                       </div>
                       <div className="flex gap-2">
-                        {product?.images
-                          .slice(0, MAX_VISIBLE)
-                          .map((img, index) => (
-                            <div
-                              key={index}
-                              className="relative w-20 h-20 overflow-hidden rounded-md"
-                            >
-                              <img
-                                src={img}
-                                alt={`Gallery ${index}`}
-                                className="object-cover w-full h-full"
-                              />
-                              {index === MAX_VISIBLE - 1 &&
-                                remainingCount > 0 && (
-                                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-sm font-semibold">
-                                    +{remainingCount}
-                                  </div>
-                                )}
-                            </div>
-                          ))}
+                        {reviewImages.map((img, index) => (
+                          <div
+                            key={index}
+                            className="relative w-20 h-20 overflow-hidden rounded-md"
+                          >
+                            <img
+                              src={img}
+                              alt={`Review image ${index + 1}`}
+                              className="object-cover w-full h-full"
+                            />
+                            {/* If this is the last visible image and there are more, show the overlay */}
+                            {index === reviewImages.length - 1 &&
+                              moreCount > 0 && (
+                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-sm font-semibold">
+                                  +{moreCount}
+                                </div>
+                              )}
+                          </div>
+                        ))}
                       </div>
                     </div>
 
@@ -606,50 +636,60 @@ const ProductView = () => {
                           transition={{ duration: 0.3 }}
                           className="overflow-hidden mt-4 p-4 shadow-sm"
                         >
-                          {product.reviews.slice(0, 2).map((review) => {
-                            const formattedDate = new Date(
-                              review.createdAt
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                            });
+                          <div className="flex flex-col gap-5">
+                            {product.reviews.slice(0, 2).map((review) => {
+                              const formattedDate = new Date(
+                                review.createdAt
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                              });
 
-                            return (
-                              <div
-                                key={review.reviewId}
-                                className="flex flex-col gap-3"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="text-sm font-medium text-gray-200">
-                                    {review.username}
+                              return (
+                                <div
+                                  key={review.reviewId}
+                                  className="flex flex-col gap-1"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="text-sm font-medium text-gray-200">
+                                      {review.username}
+                                    </div>
+                                    <div className="text-xs text-gray-200">
+                                      {formattedDate}
+                                    </div>
                                   </div>
-                                  <div className="text-xs text-gray-200">
-                                    {formattedDate}
+
+                                  <div className="flex items-center gap-1">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        size={16}
+                                        className={
+                                          i < review.rating
+                                            ? "text-yellow-400 fill-yellow-400"
+                                            : "text-gray-300"
+                                        }
+                                      />
+                                    ))}
                                   </div>
-                                </div>
 
-                                <div className="flex items-center gap-1">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      size={16}
-                                      className={
-                                        i < review.rating
-                                          ? "text-yellow-400 fill-yellow-400"
-                                          : "text-gray-300"
-                                      }
-                                    />
-                                  ))}
+                                  <p className="text-sm text-gray-100 leading-relaxed mt-1">
+                                    {review.comment}
+                                  </p>
                                 </div>
+                              );
+                            })}
+                          </div>
 
-                                <p className="text-sm text-gray-100 leading-relaxed mt-1">
-                                  {review.comment}
-                                </p>
-                              </div>
-                            );
-                          })}
-                          <button className="w-full mt-10 p-3 cursor-pointer rounded border border-gray-100 text-center">
+                          <button
+                            onClick={() =>
+                              navigate("/product-reviews", {
+                                state: { product },
+                              })
+                            }
+                            className="w-full mt-10 p-3 cursor-pointer rounded border border-gray-100 text-center"
+                          >
                             View All Reviews
                           </button>
                         </motion.div>
@@ -662,14 +702,16 @@ const ProductView = () => {
           </div>
 
           {/* Similar Products */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-xl font-semibold m-3">Similar Products</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 sm:gap-5 gap-1">
-              {products.map((product) => (
-                <ProductCard key={product.id} item={product} />
-              ))}
+          {filteredSimilar?.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <h3 className="text-xl font-semibold m-3">Similar Products</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 sm:gap-5 gap-1">
+                {filteredSimilar?.map((product) => (
+                  <ProductCard key={product.id} item={product} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
       {showSizeChart && <SizeChart onClose={() => setShowSizeChart(false)} />}

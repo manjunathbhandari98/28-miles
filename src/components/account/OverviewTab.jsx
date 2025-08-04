@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Pencil, Save } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";

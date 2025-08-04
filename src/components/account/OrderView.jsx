@@ -1,11 +1,15 @@
-import { ChevronLeft, ReceiptText, UserRound } from "lucide-react";
+/* eslint-disable no-unused-vars */
+import { ChevronLeft, ReceiptText, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import {
   cancelOrder,
   getOrderById,
   getOrders,
+  getReturnStatus,
+  requestReturn,
   trackOrder,
 } from "../../service/orderService";
 import LoadingPage from "../ui/LoadingPage";
@@ -27,9 +31,25 @@ const OrderView = () => {
   const [order, setOrder] = useState(null);
   const [trackData, setTrackData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [returned, setReturned] = useState(false);
+  const [reasonModalOpen, setReasonModalOpen] = useState(false);
   const { user } = useAuth();
   const { orderId } = useParams();
   const navigate = useNavigate();
+  const returnReasons = [
+    "Wrong item delivered",
+    "Item arrived damaged or defective",
+    "Item is not as described",
+    "Received extra item I didn’t order",
+    "Product quality not satisfactory",
+    "Item arrived too late",
+    "Changed my mind",
+    "Found a better price elsewhere",
+    "Size/fit issue",
+    "Other",
+  ];
+  const [selectedReason, setSelectedReason] = useState(0);
+  const [returnStatus, setReturnStatus] = useState([]);
 
   useEffect(() => {
     if (!user) return;
@@ -63,9 +83,48 @@ const OrderView = () => {
     fetchTrackData();
   }, [orderId]);
 
+  useEffect(() => {
+    if (!orderId) return;
+    const fetchReturnStatus = async () => {
+      try {
+        const res = await getReturnStatus(orderId);
+        setReturnStatus(res);
+      } catch (error) {
+        setReturnStatus([])
+      }
+    };
+    fetchReturnStatus();
+  }, [orderId]);
+
   const isCancelable = (status) => {
     return ["PENDING", "CONFIRMED", "PROCESSING"].includes(status);
   };
+
+  const isReturnAvailable = () => {
+    if (!orderId || !returnStatus) return false;
+    return returnStatus.some((status) => status.orderId === orderId);
+  };
+
+  const isReturnable = (status, deliveredAtString) => {
+    if (status !== "DELIVERED") return false;
+    if (!deliveredAtString) return false;
+
+    const deliveredAt = new Date(deliveredAtString);
+    const now = new Date();
+
+    // Normalize time to midnight
+    deliveredAt.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    const returnDeadline = new Date(deliveredAt);
+    returnDeadline.setDate(returnDeadline.getDate() + 7);
+
+    return now <= returnDeadline;
+  };
+
+  const [text, setText] = useState("");
+
+  const wordCount = text.match(/\b[-?(\w+)?]+\b/gi)?.length || 0;
 
   const handleCancel = async (orderId) => {
     try {
@@ -75,6 +134,25 @@ const OrderView = () => {
     } catch (err) {
       console.error("Failed to cancel order:", err);
       alert("Something went wrong while canceling the order.");
+    }
+  };
+
+  const handleReturn = async () => {
+    try {
+      const reason =
+        selectedReason === returnReasons.length - 1
+          ? text || "Other"
+          : returnReasons[selectedReason];
+
+      const returnData = {
+        userId: user.userId,
+        orderId: order.orderId,
+        reason: reason,
+      };
+      await requestReturn(returnData);
+      setReasonModalOpen(false);
+    } catch (error) {
+      toast.error("Return Request failed");
     }
   };
 
@@ -176,11 +254,92 @@ const OrderView = () => {
               Cancel Order
             </button>
           )}
+          {isReturnable(order.status, order.deliveredAt) &&
+            isReturnAvailable() && (
+              <button
+                onClick={() => setReasonModalOpen(true)}
+                className="mt-4 px-4 py-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white rounded-sm text-sm font-semibold transition"
+              >
+                Return Order
+              </button>
+            )}
         </div>
       </div>
 
       {/* Track Order */}
       {trackData && <TrackOrder trackData={trackData} />}
+
+      {reasonModalOpen && (
+        <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-zinc-900 relative border border-zinc-900 rounded-xl shadow-2xl p-6 w-11/12 max-w-md max-h-[90vh] overflow-y-auto scrollbar-hide text-center">
+            <button
+              onClick={() => setReasonModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+            <h3 className="text-white text-lg font-semibold mb-6">
+              Choose The reason
+            </h3>
+
+            {returnReasons.map((reason, index) => (
+              <div
+                key={index}
+                onClick={() => setSelectedReason(index)}
+                className="flex mt-5 cursor-pointer gap-3 items-center"
+              >
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-300 
+    ${
+      selectedReason == index
+        ? "bg-yellow-400 shadow-lg"
+        : "bg-gray-300 hover:bg-gray-400"
+    }
+  `}
+                >
+                  {selectedReason == index && (
+                    <div className="bg-zinc-800 w-3.5 h-3.5 rounded-full shadow-inner transform scale-100 transition-transform duration-300"></div>
+                  )}
+                </div>
+
+                <h2 className="text-sm">{reason}</h2>
+              </div>
+            ))}
+
+            {/* other reason */}
+            {selectedReason === returnReasons.length - 1 && (
+              <div className="flex flex-col mt-4 max-w-sm mx-auto">
+                <textarea
+                  id="comment"
+                  rows={3}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Write your comment here..."
+                  className="resize-none p-4 border border-gray-300 rounded-lg shadow-sm transition"
+                />
+                <div
+                  className={`mt-1 text-sm ${
+                    wordCount >= 50
+                      ? "text-red-500 font-semibold"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {wordCount} / {50} words
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleReturn}
+                className="bg-yellow-500 mt-4 text-white px-5 py-2 rounded-lg hover:bg-yellow-600"
+              >
+                Return My Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
