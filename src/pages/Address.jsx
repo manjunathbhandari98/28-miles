@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BorderInputBox from "../components/ui/BorderInputBox";
-import CheckoutSteps from "../components/ui/CheckoutSteps";
 import { AddressModalContext } from "../context/AddressModalContext";
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../hooks/useCart";
+import { useCheckout } from "../hooks/useCheckout";
 import { getAddress } from "../service/addressService";
 import { placeOrders } from "../service/orderService";
 import LoadingPage from "./../components/ui/LoadingPage";
 import { RUPEE_SYMBOL } from "./../utils/ruppeSymbol";
+import CheckoutSteps from "./CheckoutSteps";
 
 const Address = () => {
   const [selectedMethod, setSelectedMethod] = useState(0);
@@ -32,6 +33,7 @@ const Address = () => {
   const { cartItems, cart } = useCart();
   const { selectedAddress, setSelectedAddress } =
     useContext(AddressModalContext);
+  const { completeStep } = useCheckout();
 
   useEffect(() => {
     if (!user) {
@@ -75,6 +77,7 @@ const Address = () => {
       "country",
       "postalCode",
     ];
+
     for (let field of required) {
       if (!formData[field]?.trim()) {
         setError(
@@ -105,15 +108,12 @@ const Address = () => {
     try {
       setError(null);
 
-      if (!validateForm()) {
-        return;
-      }
+      if (!validateForm()) return;
 
       setOrderLoading(true);
 
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
-      // Format items with proper total calculation
       const formattedItems = cartItems.map((item) => ({
         productId: item.productId,
         productName: item.productName,
@@ -121,61 +121,56 @@ const Address = () => {
         color: item.color,
         quantity: item.quantity,
         price: item.price,
-        total: item.price * item.quantity, // Add total field
+        total: item.price * item.quantity,
         image: item.image,
       }));
 
-      const orderData = {
-        userId: user.userId,
-        items: formattedItems,
-        shippingAddress: {
-          fullName,
-          phone: formData.phone,
-          email: formData.email || null,
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          postalCode: formData.postalCode,
-          country: formData.country,
-        },
-        totalAmount: amountPayable,
-        paymentMethod: selectedMethod === 0 ? "ONLINE" : "CASH",
-        deliveryCharges: selectedMethod === 0 ? 0 : 60,
+      // Create complete address object for context
+      const completeAddress = {
+        fullName,
+        phone: formData.phone,
+        email: formData.email,
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
+        country: formData.country,
       };
 
-      console.log("Placing order with data:", orderData);
-      const res = await placeOrders(orderData);
-      const orderId = res?.orderId;
+      // Store address in context for payment page
+      setSelectedAddress(completeAddress);
 
-      console.log("Order response:", res);
-
-      if (orderId) {
-        // Store order data in context for payment page
-        setSelectedAddress({
-          ...selectedAddress,
-          fullName,
-          phone: formData.phone,
-          email: formData.email,
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          postalCode: formData.postalCode,
-          country: formData.country,
-        });
-
-        if (selectedMethod === 0) {
-          // Navigate to payment page for online payment
-          navigate(`/checkout/payment/${orderId}`);
-        } else {
-          // For COD, clear cart and go to success page
-          navigate(`/order-success/${orderId}`);
-        }
+      if (selectedMethod === 0) {
+        // ONLINE: Go to payment page
+        completeStep("address");
+        navigate(`/checkout/payment`);
       } else {
-        throw new Error("Order ID not returned from server");
+        // COD: Place order immediately
+        const orderData = {
+          userId: user.userId,
+          items: formattedItems,
+          shippingAddress: completeAddress,
+          totalAmount: amountPayable,
+          paymentMethod: "CASH",
+          deliveryCharges: 60,
+        };
+
+        console.log("Placing COD order:", orderData);
+        const res = await placeOrders(orderData);
+        const orderId = res?.orderId;
+
+        if (orderId) {
+          completeStep("address");
+          completeStep("payment");
+          completeStep("success");
+          navigate(`/order-success/${orderId}`);
+        } else {
+          throw new Error("Order ID not returned from server");
+        }
       }
     } catch (error) {
-      console.error("Error placing order:", error);
-      setError(error.message || "Failed to place order. Please try again.");
+      console.error("Error in handleOrder:", error);
+      setError(error.message || "Failed to process order. Please try again.");
     } finally {
       setOrderLoading(false);
     }
@@ -227,7 +222,7 @@ const Address = () => {
   };
 
   return (
-    <div className="w-full min-h-screen px-4 sm:px-10 py-6 font-sans">
+    <div className="w-full pt-16 min-h-screen px-4 sm:px-10 py-6 font-sans">
       {/* Top Bar */}
       <div className="hidden sm:flex justify-between items-center mb-8">
         <Link to="/">

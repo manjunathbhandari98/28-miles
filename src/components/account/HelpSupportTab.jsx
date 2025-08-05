@@ -2,7 +2,7 @@ import { HelpCircle, Mail, PhoneCall } from "lucide-react";
 
 const HelpSupportTab = () => {
   return (
-    <div className="text-white space-y-6">
+    <div className="text-white space-y-6 pt-12">
       <h2 className="text-xl font-semibold flex items-center gap-2">
         <HelpCircle size={20} />
         Help & Support

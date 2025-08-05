@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import ProductCard from "../components/common/ProductCard";
 import EmptyWishlist from "../components/ui/EmptyWishList";
 import LoadingPage from "../components/ui/LoadingPage";
@@ -6,6 +7,10 @@ import { useWishList } from "../hooks/useWishList";
 const Wishlist = () => {
   const { wishListItems, getWishListCount, loading } = useWishList();
   const TOTAL_ITEMS = getWishListCount();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   if (loading) {
     return <LoadingPage />;

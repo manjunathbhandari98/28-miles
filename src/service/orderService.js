@@ -92,6 +92,19 @@ export const requestReturn = async (returnData) => {
   }
 };
 
+export const getReturnsByUser = async (userId) => {
+  try {
+    const res = await axios.get(`${BASE_URL}/return/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const getReturnStatus = async (orderId) => {
   try {
     const res = axios.get(`${BASE_URL}/return/status/${orderId}`, {

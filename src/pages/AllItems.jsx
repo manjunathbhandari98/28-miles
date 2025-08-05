@@ -11,7 +11,7 @@ const AllItems = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
   const [totalPages, setTotalPages] = useState(0);
-  const MAX_PRODUCTS = 20;
+  const MAX_PRODUCTS = 8;
 
   useEffect(() => {
     const loadProducts = async () => {

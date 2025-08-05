@@ -8,6 +8,8 @@ const SearchPage = () => {
   const inputRef = useRef();
   const [searchKey, setSearchKey] = useState("");
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true); // 👈 loading state
+
   useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -15,11 +17,13 @@ const SearchPage = () => {
         setProducts(data.content);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
-
     loadProducts();
   }, []);
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -54,29 +58,45 @@ const SearchPage = () => {
             value={searchKey}
             onChange={(e) => setSearchKey(e.target.value)}
             placeholder="Search Your Product"
-            className="outline-0 border-0 w-full"
+            className="outline-0 border-0 w-full bg-transparent text-white"
           />
         </div>
         <Search className="cursor-pointer" size={20} />
       </div>
+
       {/* Search Items */}
       {searchKey !== "" && (
         <div className="flex flex-col gap-5 p-5 w-full">
-          {filteredProducts.slice(0, 6).map((product) => (
-            <Link key={product.id} to={`/product-view/${product.slug}`}>
-              <div className="flex gap-2">
-                <img
-                  src={product.images?.[0]}
-                  alt={product.name}
-                  className="w-12"
-                />
-                <div className="flex flex-col p-2 gap-2">
-                  <h2 className="text-sm cursor-pointer">{product.name}</h2>
-                  <p className="text-xs">In {product.categoryName}</p>
+          {loading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex gap-2 animate-pulse items-center"
+                >
+                  <div className="w-12 h-12 bg-zinc-800 rounded-md" />
+                  <div className="flex flex-col gap-2">
+                    <div className="w-40 h-4 bg-zinc-800 rounded" />
+                    <div className="w-24 h-3 bg-zinc-700 rounded" />
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              ))
+            : filteredProducts.slice(0, 6).map((product) => (
+                <Link key={product.id} to={`/product-view/${product.slug}`}>
+                  <div className="flex gap-2">
+                    <img
+                      src={product.images?.[0]}
+                      alt={product.name}
+                      className="w-12 h-12 object-cover rounded-md"
+                    />
+                    <div className="flex flex-col p-2 gap-2">
+                      <h2 className="text-sm cursor-pointer">{product.name}</h2>
+                      <p className="text-xs text-gray-400">
+                        In {product.categoryName}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
         </div>
       )}
     </div>

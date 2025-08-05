@@ -182,7 +182,7 @@ const ProductView = () => {
         `${product.name} added to bag! (${itemCount} item${
           itemCount > 1 ? "s" : ""
         })`,
-        { duration: 4000, position: "bottom-center" }
+        { duration: 4000, position: "top-center" }
       );
 
       // Optional: Clear selections after adding to cart
@@ -295,7 +295,7 @@ const ProductView = () => {
             </div>
 
             {/* product Info */}
-            <div className="md:p-10 flex flex-col gap-6 ">
+            <div className="md:p-10 p-3 flex flex-col gap-6 ">
               {/* <h1 className="text-md hidden sm:flex text-white/60">
             Home/Men/Denim-Jacket
           </h1> */}
@@ -714,6 +714,7 @@ const ProductView = () => {
           )}
         </div>
       )}
+
       {showSizeChart && <SizeChart onClose={() => setShowSizeChart(false)} />}
     </>
   );

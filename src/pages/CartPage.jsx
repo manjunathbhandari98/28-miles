@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
-import CheckoutSteps from "../components/ui/CheckoutSteps";
+import { Link, useNavigate } from "react-router-dom";
+// import CheckoutSteps from "../components/ui/CheckoutSteps";
 import ErrorPage from "../components/ui/ErrorPage";
 import LoadingPage from "../components/ui/LoadingPage";
 import { useAuth } from "../hooks/useAuth";
+import { useCheckout } from "../hooks/useCheckout";
 import { moveToWishlist, removeCartItem } from "../service/cartService";
 import CartItem from "./../components/common/CartItem";
 import { useCart } from "./../hooks/useCart";
+import CheckoutSteps from "./CheckoutSteps";
 
 const CartPage = () => {
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
+  const { completeStep } = useCheckout();
   const { isAuthenticated } = useAuth();
   const {
     cartItems: contextCartItems,
@@ -75,6 +78,11 @@ const CartPage = () => {
       console.error(error);
       toast.error("Failed to move item");
     }
+  };
+
+  const handleProceed = () => {
+    completeStep("cart");
+    navigate("/checkout/address");
   };
 
   if (loading) {
@@ -193,12 +201,12 @@ const CartPage = () => {
             </p>
           </div>
 
-          <Link
-            to={"/checkout/address"}
+          <button
+            onClick={handleProceed}
             className="mt-6 cursor-pointer bg-yellow-300 hover:bg-yellow-400 text-center text-black font-semibold py-3 rounded uppercase transition"
           >
             Proceed to Checkout
-          </Link>
+          </button>
         </div>
       </div>
     </div>

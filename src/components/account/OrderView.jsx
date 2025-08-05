@@ -8,7 +8,7 @@ import {
   cancelOrder,
   getOrderById,
   getOrders,
-  getReturnStatus,
+  getReturnsByUser,
   requestReturn,
   trackOrder,
 } from "../../service/orderService";
@@ -31,7 +31,8 @@ const OrderView = () => {
   const [order, setOrder] = useState(null);
   const [trackData, setTrackData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [returned, setReturned] = useState(false);
+  const [returnedOrders, setReturnedOrders] = useState([]);
+  const [mode, setMode] = useState();
   const [reasonModalOpen, setReasonModalOpen] = useState(false);
   const { user } = useAuth();
   const { orderId } = useParams();
@@ -83,18 +84,35 @@ const OrderView = () => {
     fetchTrackData();
   }, [orderId]);
 
+  const fetchReturnByUser = async () => {
+    try {
+      setLoading(true);
+      const res = await getReturnsByUser(user.userId);
+      setReturnedOrders(res);
+    } catch (error) {
+      setReturnedOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (!orderId) return;
-    const fetchReturnStatus = async () => {
-      try {
-        const res = await getReturnStatus(orderId);
-        setReturnStatus(res);
-      } catch (error) {
-        setReturnStatus([])
-      }
-    };
-    fetchReturnStatus();
-  }, [orderId]);
+    if (!user) return;
+    fetchReturnByUser();
+  }, [user]);
+
+  // useEffect(() => {
+  //   if (!returnedOrders) return;
+  //   const fetchStatus = async (orderId) => {
+  //     try {
+  //       const res = await getReturnStatus(orderId);
+  //       setReturnStatus(res);
+  //     } catch (error) {
+  //       setReturnStatus("");
+  //     }
+  //   };
+  //   fetchStatus();
+  // }, [returnedOrders]);
 
   const isCancelable = (status) => {
     return ["PENDING", "CONFIRMED", "PROCESSING"].includes(status);
@@ -102,7 +120,7 @@ const OrderView = () => {
 
   const isReturnAvailable = () => {
     if (!orderId || !returnStatus) return false;
-    return returnStatus.some((status) => status.orderId === orderId);
+    return returnedOrders?.some((order) => order.orderId == orderId);
   };
 
   const isReturnable = (status, deliveredAtString) => {
@@ -126,11 +144,22 @@ const OrderView = () => {
 
   const wordCount = text.match(/\b[-?(\w+)?]+\b/gi)?.length || 0;
 
-  const handleCancel = async (orderId) => {
+  const onReturnClick = () => {
+    setMode("return");
+    setReasonModalOpen(true);
+  };
+
+  const onCancelClick = () => {
+    setMode("cancel");
+    setReasonModalOpen(true);
+  };
+
+  const handleCancel = async () => {
     try {
-      await cancelOrder(orderId);
+      await cancelOrder(order.orderId);
       const res = await getOrders(user.userId);
       setOrder(res);
+      navigate(-1);
     } catch (err) {
       console.error("Failed to cancel order:", err);
       alert("Something went wrong while canceling the order.");
@@ -151,12 +180,14 @@ const OrderView = () => {
       };
       await requestReturn(returnData);
       setReasonModalOpen(false);
+      fetchReturnByUser();
     } catch (error) {
       toast.error("Return Request failed");
     }
   };
 
-  if (loading || !order || !trackData) return <LoadingPage />;
+  if (loading || !order || !trackData || !returnedOrders)
+    return <LoadingPage />;
 
   return (
     <div className="text-white space-y-6 md:p-10 p-2 w-full mx-auto">
@@ -187,29 +218,36 @@ const OrderView = () => {
         </div>
 
         {/* Order Items */}
-        <div className="flex flex-col gap-3 mt-3">
-          {order.items?.map((item) => (
-            <div
-              key={item.orderItemId}
-              className="flex items-center gap-4 p-3 border-zinc-900 shadow hover:shadow-lg transition"
-            >
-              <img
-                src={item.image}
-                alt={item.productName}
-                className="w-16 h-16 object-cover rounded-lg border border-zinc-700"
-              />
-              <div className="flex flex-col flex-1">
-                <div className="text-md font-medium text-white">
-                  {item.productName}
-                </div>
-                <div className="flex gap-3 mt-0.5 text-sm text-zinc-400">
-                  <span>Qty: {item.quantity}</span>
-                  {item.size && <span>| Size: {item.size}</span>}
-                  {item.color && <span>| Color: {item.color}</span>}
+        <div className="flex justify-between">
+          <div className="flex flex-col gap-3 mt-3">
+            {order.items?.map((item) => (
+              <div
+                key={item.orderItemId}
+                className="flex items-center gap-4 p-3 border-zinc-900 shadow hover:shadow-lg transition"
+              >
+                <img
+                  src={item.image}
+                  alt={item.productName}
+                  className="w-16 h-16 object-cover rounded-lg border border-zinc-700"
+                />
+                <div className="flex flex-col flex-1">
+                  <div className="text-md font-medium text-white">
+                    {item.productName}
+                  </div>
+                  <div className="flex gap-3 mt-0.5 text-sm text-zinc-400">
+                    <span>Qty: {item.quantity}</span>
+                    {item.size && <span>| Size: {item.size}</span>}
+                    {item.color && <span>| Color: {item.color}</span>}
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+          {isReturnAvailable() && (
+            <div className="mt-4 px-4 py-2 rounded-sm text-sm font-semibold transition">
+              Return Proccessing
             </div>
-          ))}
+          )}
         </div>
 
         {/* Delivery & Payment */}
@@ -248,16 +286,16 @@ const OrderView = () => {
         <div className="flex w-full justify-end">
           {isCancelable(order.status) && (
             <button
-              onClick={() => handleCancel(order.orderId)}
+              onClick={onCancelClick}
               className="mt-4 px-4 py-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white rounded-sm text-sm font-semibold transition"
             >
               Cancel Order
             </button>
           )}
           {isReturnable(order.status, order.deliveredAt) &&
-            isReturnAvailable() && (
+            !isReturnAvailable() && (
               <button
-                onClick={() => setReasonModalOpen(true)}
+                onClick={onReturnClick}
                 className="mt-4 px-4 py-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white rounded-sm text-sm font-semibold transition"
               >
                 Return Order
@@ -331,10 +369,10 @@ const OrderView = () => {
 
             <div className="flex justify-center gap-4">
               <button
-                onClick={handleReturn}
+                onClick={mode == "return" ? handleReturn : handleCancel}
                 className="bg-yellow-500 mt-4 text-white px-5 py-2 rounded-lg hover:bg-yellow-600"
               >
-                Return My Order
+                {mode == "return" ? "Return My Order" : "Cancel My Order"}
               </button>
             </div>
           </div>

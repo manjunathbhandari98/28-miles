@@ -63,22 +63,25 @@ const AddressesTab = () => {
         </div>
       ) : (
         <div className="space-y-5">
+          <div className="flex pt-14 justify-between">
+            <h2 className="text-2xl font-semibold tracking-wide">
+              Saved Addresses
+            </h2>
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+              {addresses.length < 3 && (
+                <button
+                  onClick={handleAddressModal}
+                  className="inline-flex items-center gap-2 bg-gradient-to-tr text-black from-white to-gray-100 px-4 py-2 rounded-xl shadow-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white-400 cursor-pointer transition"
+                >
+                  <PlusCircle size={18} />
+                  Add Address
+                </button>
+              )}
+            </div>
+          </div>
+
           {addresses.map((address) => (
             <>
-              <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
-                <h2 className="text-2xl font-semibold tracking-wide">
-                  Saved Addresses
-                </h2>
-                {addresses.length < 3 && (
-                  <button
-                    onClick={handleAddressModal}
-                    className="inline-flex items-center gap-2 bg-gradient-to-tr text-black from-white to-gray-100 px-4 py-2 rounded-xl shadow-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white-400 cursor-pointer transition"
-                  >
-                    <PlusCircle size={18} />
-                    Add Address
-                  </button>
-                )}
-              </div>
               <div
                 key={address.addressId}
                 className="flex items-start justify-between gap-5 bg-gradient-to-tr from-zinc-900 to-zinc-800/70 border border-zinc-700 px-5 py-4 rounded-2xl shadow-md hover:shadow-lg transition"

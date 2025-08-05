@@ -209,13 +209,19 @@ const OrderSuccess = () => {
             Print Receipt
           </button>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              navigate("/");
+              refreshCart();
+            }}
             className="bg-zinc-700 hover:bg-zinc-600 text-white font-medium py-2 px-5 rounded-lg shadow transition"
           >
             Back to Home
           </button>
           <button
-            onClick={() => navigate("/my-profile")}
+            onClick={() => {
+              navigate("/my-profile");
+              refreshCart();
+            }}
             className="bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-5 rounded-lg shadow transition"
           >
             View Orders

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Check, X } from "lucide-react"; // Or any close icon you use
+import { X } from "lucide-react"; // Or any close icon you use
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AddressModalContext } from "../../context/AddressModalContext";
@@ -47,13 +47,9 @@ const AddressModalPage = ({ user }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const addressData = {
-      ...formData,
-      defaultAddress: defaultAddress,
-    };
 
     try {
-      await addAddress(user.userId, addressData);
+      await addAddress(user.userId, formData);
       toast.success("Address Saved Successfully");
       loadAddresses();
       onCloseAddressModal();
@@ -74,13 +70,9 @@ const AddressModalPage = ({ user }) => {
 
   const handleEdit = async (e) => {
     e.preventDefault();
-    const addressData = {
-      ...formData,
-      defaultAddress: defaultAddress,
-    };
 
     try {
-      await updateAddress(selectedAddress.addressId, addressData);
+      await updateAddress(selectedAddress.addressId, formData);
       toast.success("Address Updated Successfully");
       loadAddresses();
       onCloseAddressModal();
@@ -208,7 +200,7 @@ const AddressModalPage = ({ user }) => {
             />
           </div>
 
-          <div className="flex gap-3 px-2 items-center">
+          {/* <div className="flex gap-3 px-2 items-center">
             <div
               onClick={onSetDefult}
               className={`border border-gray-50 ${
@@ -218,7 +210,7 @@ const AddressModalPage = ({ user }) => {
               {defaultAddress && <Check size={14} />}
             </div>
             <h2 className="text-lg">Set as primary address</h2>
-          </div>
+          </div> */}
 
           {/* Submit Button */}
           <button

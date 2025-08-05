@@ -22,8 +22,6 @@ import { useAuth } from "../hooks/useAuth";
 const Account = () => {
   const navigate = useNavigate();
   const { logout } = useAuth(); // Get logout from context
-
-  const [activeTab, setActiveTab] = useState(0);
   const [edit, setEdit] = useState(false);
   const { user } = useAuth();
   const { addressModalOpen } = useContext(AddressModalContext);
@@ -31,26 +29,34 @@ const Account = () => {
   const [logoutConfirmationModalOpen, setLogoutConfirmationModalOpen] =
     useState(false);
 
+  const storedTab = parseInt(sessionStorage.getItem("activeAccountTab"));
+  const [activeTab, setActiveTab] = useState(isNaN(storedTab) ? 0 : storedTab); // Load stored tab if exists
+
+  const handleTabClick = (index) => {
+    setActiveTab(index);
+    sessionStorage.setItem("activeAccountTab", index); // Save selected tab
+  };
+
   const tabs = [
     {
       title: "Overview",
       icon: <SquareChartGantt size={18} />,
-      onClick: () => setActiveTab(0),
+      onClick: () => handleTabClick(0),
     },
     {
       title: "Orders",
       icon: <Shirt size={18} />,
-      onClick: () => setActiveTab(1),
+      onClick: () => handleTabClick(1),
     },
     {
       title: "Addresses",
       icon: <MapPin size={18} />,
-      onClick: () => setActiveTab(2),
+      onClick: () => handleTabClick(2),
     },
     {
       title: "Help & Support",
       icon: <BadgeInfo size={18} />,
-      onClick: () => setActiveTab(3),
+      onClick: () => handleTabClick(3),
     },
     {
       title: "Logout",
@@ -60,6 +66,7 @@ const Account = () => {
   ];
 
   const confirmLogout = () => {
+    sessionStorage.removeItem("activeAccountTab");
     logout();
     navigate("/");
   };

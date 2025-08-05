@@ -57,6 +57,9 @@ const Sidebar = () => {
   const isLoginPage = location.pathname.includes("auth");
   const isManagePage = location.pathname.includes("manage");
   const isHelpSupportPage = location.pathname.includes("help-and-support");
+  const isCheckoutRoute = location.pathname.includes("checkout");
+
+  const isPaymentPage = location.pathname.includes("payment");
 
   if (isSearchRoute) return null;
 
@@ -66,6 +69,8 @@ const Sidebar = () => {
 
   if (isManagePage) return null;
   if (isHelpSupportPage) return null;
+  if (isCheckoutRoute) return null;
+  if (isPaymentPage) return null;
 
   return (
     <>

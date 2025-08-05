@@ -5,9 +5,9 @@ const Footer = () => {
   const navigate = useNavigate();
 
   const services = [
-    { id: 1, name: "Contact Us", link: "#" },
-    { id: 2, name: "Track Order", link: "#" },
-    { id: 3, name: "Return Order", link: "#" },
+    { id: 1, name: "Contact Us", link: "/contact-us" },
+    { id: 2, name: "Track Order", link: "/manage-orders" },
+    { id: 3, name: "Return Order", link: "/manage-orders" },
   ];
 
   const quickLinks = [
