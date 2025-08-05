@@ -111,7 +111,7 @@ const ProductCard = ({ item }) => {
             <h2 className="sm:text-sm text-xs font-semibold uppercase text-white truncate">
               {item.name}
             </h2>
-            <p className="text-xs text-zinc-400 truncate">{item.description}</p>
+            <p className="text-xs text-zinc-400 truncate">{item.summary}</p>
 
             <div className="flex items-center gap-2 mt-1">
               <span className="text-white font-semibold sm:text-lg text-md">

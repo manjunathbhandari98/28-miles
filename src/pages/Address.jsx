@@ -14,7 +14,6 @@ import CheckoutSteps from "./CheckoutSteps";
 const Address = () => {
   const [selectedMethod, setSelectedMethod] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [orderLoading, setOrderLoading] = useState(false);
   const [addresses, setAddresses] = useState([]);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -110,8 +109,6 @@ const Address = () => {
 
       if (!validateForm()) return;
 
-      setOrderLoading(true);
-
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
       const formattedItems = cartItems.map((item) => ({
@@ -171,8 +168,6 @@ const Address = () => {
     } catch (error) {
       console.error("Error in handleOrder:", error);
       setError(error.message || "Failed to process order. Please try again.");
-    } finally {
-      setOrderLoading(false);
     }
   };
 

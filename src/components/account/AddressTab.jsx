@@ -48,7 +48,7 @@ const AddressesTab = () => {
 
   return (
     <div className="text-white w-full space-y-7 mx-auto">
-      {addresses.length === 0 ? (
+      {addresses?.length === 0 ? (
         <div className="flex flex-col items-center mt-20 w-full text-gray-400">
           <MapPin size={44} className="text-white-500" />
           <p className="text-lg">No saved addresses yet.</p>

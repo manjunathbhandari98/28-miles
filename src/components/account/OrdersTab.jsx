@@ -44,7 +44,7 @@ const OrdersTab = () => {
 
   return (
     <div className="text-white pt-12 space-y-6 w-full mx-auto">
-      {orders.length === 0 ? (
+      {orders?.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center mt-10 space-y-3 text-gray-400">
           <ShoppingBag size={48} />
           <p className="text-lg font-medium">No orders yet.</p>
