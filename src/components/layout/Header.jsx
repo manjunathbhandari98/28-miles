@@ -1,7 +1,6 @@
 import { Heart, Search, ShoppingBag, User } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import SearchPage from "../../pages/Search";
 import { useCart } from "./../../hooks/useCart";
 import AnnouncementBar from "./AnnouncementBar";
 import Navbar from "./Navbar";
@@ -20,7 +19,7 @@ const Header = () => {
 
   if (isCheckoutPage) return null;
 
-  if (isSearchRoute) return <SearchPage />;
+  if (isSearchRoute) return null;
 
   if (isLoginPage) return null;
 

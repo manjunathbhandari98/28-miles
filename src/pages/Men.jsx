@@ -46,7 +46,7 @@ const Men = () => {
         </div>
       ) : (
         <>
-          <CollectionGrid products={products} name={"Men"} />
+          <CollectionGrid products={products} name={"Men"} loading />
 
           <div
             className={`${

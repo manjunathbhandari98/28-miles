@@ -44,6 +44,7 @@ import { CheckoutProvider } from "./context/CheckoutContext";
 import ContactUs from "./pages/ContactUs";
 import NotFoundPage from "./pages/NotFoundPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import SearchPage from "./pages/Search";
 import PrivateRoute from "./routes/PrivateRoutes";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoutes";
@@ -68,6 +69,7 @@ function App() {
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/product-reviews" element={<ReviewPage />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="*" element={<NotFoundPage />} />
 
         {/* Checkout Steps with Enhanced Protection */}

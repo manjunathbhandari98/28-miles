@@ -1,8 +1,9 @@
 import { ArrowUpAZ, ChevronRight, SlidersVertical } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import LoadingPage from "../ui/LoadingPage";
 import ProductCard from "./ProductCard";
 
-const CollectionGrid = ({ products, name }) => {
+const CollectionGrid = ({ products, name, loading }) => {
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef(null);
 
@@ -148,6 +149,8 @@ const CollectionGrid = ({ products, name }) => {
       rating: [],
     });
   };
+
+  if (loading) return <LoadingPage />;
 
   return (
     <>
