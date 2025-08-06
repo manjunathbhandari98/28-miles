@@ -3,6 +3,7 @@ import { Heart, Star, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link, useLocation } from "react-router-dom";
 import { useWishList } from "../../hooks/useWishList";
+import LoadingPage from "../ui/LoadingPage";
 
 const ProductCard = ({ item }) => {
   const location = useLocation();
@@ -51,6 +52,8 @@ const ProductCard = ({ item }) => {
     e.stopPropagation();
     alert("Item moved to bag!");
   };
+
+  if (!item) return <LoadingPage />;
 
   return (
     <div className="w-full sm:w-auto z-1">
