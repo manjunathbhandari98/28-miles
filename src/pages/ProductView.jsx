@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Banknote,
@@ -227,7 +228,7 @@ const ProductView = () => {
           No products found.
         </div>
       ) : (
-        <div className="md:pt-16 pt-10 m-5 montserrat">
+        <div className="md:pt-16 pt-10 md:m-5 montserrat">
           {/* breadcrumb */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 overflow-y-auto scrollbar-hide">
