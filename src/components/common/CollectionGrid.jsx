@@ -106,10 +106,6 @@ const CollectionGrid = ({ products, name, loading }) => {
     setItems(filtered);
   }, [selectedFilters, products]);
 
-  useEffect(() => {
-    setItems(products);
-  }, [products]);
-
   const handleSortChange = (value) => {
     setSortOption(value);
 
@@ -150,16 +146,13 @@ const CollectionGrid = ({ products, name, loading }) => {
     });
   };
 
-  if (loading || !items) return <LoadingPage />;
+  if (loading || !products || products?.length === 0) {
+    return <LoadingPage />;
+  }
 
   return (
     <>
       <div className="flex flex-col md:pt-20 md:px-4 px-2 py-6 w-full montserrat">
-        {/* Breadcrumb */}
-        {/* <p className="text-sm hidden uppercase md:flex items-center gap-1 mb-4 text-gray-300">
-          Home <ChevronRight size={18} className="mb-0.5" /> Men
-        </p> */}
-
         <div className="flex flex-col gap-5 w-full">
           {/* Collection Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
