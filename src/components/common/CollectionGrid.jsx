@@ -1,4 +1,4 @@
-import { ArrowUpAZ, ChevronRight, SlidersVertical } from "lucide-react";
+import { ArrowUpAZ, SlidersVertical } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import LoadingPage from "../ui/LoadingPage";
 import ProductCard from "./ProductCard";
@@ -150,15 +150,15 @@ const CollectionGrid = ({ products, name, loading }) => {
     });
   };
 
-  if (loading) return <LoadingPage />;
+  if (loading || !items) return <LoadingPage />;
 
   return (
     <>
-      <div className="flex flex-col md:px-4 px-2 py-6 w-full montserrat">
+      <div className="flex flex-col md:pt-20 md:px-4 px-2 py-6 w-full montserrat">
         {/* Breadcrumb */}
-        <p className="text-sm hidden uppercase md:flex items-center gap-1 mb-4 text-gray-300">
+        {/* <p className="text-sm hidden uppercase md:flex items-center gap-1 mb-4 text-gray-300">
           Home <ChevronRight size={18} className="mb-0.5" /> Men
-        </p>
+        </p> */}
 
         <div className="flex flex-col gap-5 w-full">
           {/* Collection Header */}

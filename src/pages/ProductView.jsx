@@ -56,6 +56,10 @@ const ProductView = () => {
   const { handleAddToWishList, isInWishList } = useWishList();
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
     const fetchProdut = async () => {
       try {
         setLoading(true);

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { ChevronLeft, ReceiptText, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
