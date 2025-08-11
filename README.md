@@ -4,7 +4,7 @@
 
 Live Demo
 A live version of the application is deployed here:
-28-miles.vercel.app
+https://28-miles.vercel.app/
 
 Table of Contents
 Features
