@@ -1,12 +1,68 @@
-# React + Vite
+# 28 Miles
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+28-Miles is a sleek and modern e-commerce web application built using React with Vite, designed for fast performance and great developer experience.
 
-Currently, two official plugins are available:
+Live Demo
+A live version of the application is deployed here:
+28-miles.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Table of Contents
+Features
 
-## Expanding the ESLint configuration
+Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Setup & Installation
+
+Usage
+
+Project Structure
+
+Contributing
+
+License
+
+Features
+Responsive UI — polished design that works across devices.
+
+Fast Loading — powered by React and Vite for instant page loads.
+
+Intuitive Navigation — simple and clean for seamless user experience.
+
+Product Listing — view a catalog of items with basic details.
+
+Shopping Cart — add, remove, and manage items in your cart.
+
+WishList - add, remove item in your wishlist
+
+Checkout Flow — and payment integration.
+
+Tech Stack
+Frontend: React with Vite + Tailwind — for fast, modern and efficient UI development.
+
+Backend: Spring Boot - (https://github.com/manjunathbhandari98/28-miles-backend)
+
+Setup & Installation
+Clone the repository:
+
+git clone https://github.com/manjunathbhandari98/28-miles.git
+cd 28-miles
+
+Install dependencies:
+
+npm install
+Run the development server:
+
+npm run dev
+Open your browser to the displayed local URL (typically http://localhost:5173).
+
+To create an optimized production build:
+
+npm run build
+Usage & Workflow
+Browse the product catalog.
+
+Click on a product for details 
+
+Use the shopping cart to manage selected items.
+
+Proceed to checkout or initiate payment.
